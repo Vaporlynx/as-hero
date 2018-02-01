@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AS Hero!</title>
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      font-family: Ubuntu, sans-serif;
+    }
+    .spacedRow {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .spacedColumn {
+        display: flex;
+        flex-direction: column;
+      }
+  </style>
+</head>
+<body>
+    <div id="mechContainer">
+
+    </div>
+    <script type="module" src = "/src/unitCard.js">
+    </script>
+    <script type="module">
+        const handleError = err => {
+            console.log(err);
+        }
+        const mechContainerElem = document.getElementById("mechContainer");
+        (async () => {
+            try {
+                const unparsed = await window.fetch("http://masterunitlist.info/Unit/QuickList?MinPV=1&MaxPV=999&Name=spider&_=1517453647342");
+                const data = JSON.parse(await unparsed.text()).Units;
+                for (const mech of data) {
+                    mech.name = mech.Name;
+                    const card = document.createElement("unit-card");
+                    card.data = mech;
+                    mechContainerElem.appendChild(card);
+                }
+            }
+            catch (err) {
+                handleError(err);
+            }
+        })();
+    </script>
+</body>
+</html>
