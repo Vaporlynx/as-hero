@@ -1,1 +1,1 @@
-asHero
+Alpha strike card renderer 
