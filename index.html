@@ -3,31 +3,24 @@
 <head>
   <meta charset="utf-8">
   <title>AS Hero!</title>
-  <style>
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      margin: 0;
-      font-family: Ubuntu, sans-serif;
-    }
-    .spacedRow {
-        display: flex;
-        flex-direction: row;
-      }
 
-      .spacedColumn {
-        display: flex;
-        flex-direction: column;
-      }
-  </style>
 </head>
 <body>
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            font-family: Ubuntu, sans-serif;
+        }
+        </style>
     <div id="mechContainer">
 
     </div>
-    <script type="module" src = "/src/unitCard.js">
-    </script>
+    <script type="module" src = "/src/components/pips.js"></script>
+    <script type="module" src = "/src/components/label.js"></script>
+    <script type="module" src = "/src/unitCard.js"></script>
     <script type="module">
         const handleError = err => {
             console.log(err);
@@ -35,11 +28,14 @@
         const mechContainerElem = document.getElementById("mechContainer");
         (async () => {
             try {
-                const unparsed = await window.fetch("http://masterunitlist.info/Unit/QuickList?MinPV=1&MaxPV=999&Name=spider&_=1517453647342");
-                const data = JSON.parse(await unparsed.text()).Units;
+                const mechName ="atlas"
+                const unParsed = await window.fetch(`http://masterunitlist.info/Unit/QuickList?MinPV=1&MaxPV=999&Name=${mechName}&_=1517453647342`);
+                const data = JSON.parse(await unParsed.text()).Units;
                 for (const mech of data) {
-                    mech.name = mech.Name;
                     const card = document.createElement("unit-card");
+                    mech.name = mech.Name;
+                    mech.armor = mech.BFArmor;
+                    mech.structure = mech.BFStructure;
                     card.data = mech;
                     mechContainerElem.appendChild(card);
                 }
