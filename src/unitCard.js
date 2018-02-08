@@ -24,17 +24,32 @@ template.innerHTML = `
 
         #header {
             height: 50px;
+            justify-content: space-between;
+        }
+
+        #upperDetails {
+            height: 200px;
+        }
+
+        #mainDetails {
+            width: 400px;
+        }
+
+        #image {
+            object-fit: contain;
+            height: inherit;
         }
     </style>
     <div id="cardBody" class="spacedColumn">
         <div id="header" class="spacedRow">
             <div id="name" class="spacedColumn">
             </div>
-            <div id="pv">
+            <vpl-label prefix="PV:">
+            <div id="pv" slot="content">
             </div>
         </div>
         <div id="upperDetails" class="spacedRow">
-            <div class="spacedColumn">
+            <div class="spacedColumn" id="mainDetails">
                 <div id="attributes" class="spacedRow">
                     <div id="type">
                     </div>
@@ -42,20 +57,25 @@ template.innerHTML = `
                     </div>
                     <div id="tmm">
                     </div>
-                    <div id="movement">
-                    </div>
+                    <vpl-label prefix="MV:">
+                        <div id="movement" slot="content">
+                        </div>
+                    </vpl-label>
                     <div id="role">
                     </div>
                     <div id="skill">
                     </div>
                 </div>
                 <div id="damage" class="spacedRow">
-                    <div id="short">
-                    </div>
-                    <div id="medium">
-                    </div>
-                    <div id="long">
-                    </div>
+                    <vpl-label prefix="S(+0)">
+                        <div id="short" slot="content"></div>
+                    </vpl-label>
+                    <vpl-label prefix="M(+2)">
+                        <div id="medium" slot="content"></div>
+                    </vpl-label>
+                    <vpl-label prefix="L(+4)">
+                        <div id="long" slot="content"></div>
+                    </vpl-label>
                 </div>
                 <div id="heat" class="spacedRow">
                     <div id="overheat>
@@ -64,17 +84,16 @@ template.innerHTML = `
                     </div>
                 </div>
             </div>
-            <div id="pictureContainer">
-            </div>
+            <img id="image"></img>
         </div>
         <div id="lowerDetails" class="spacedRow">
             <div id="structureSpecials" class="spacedRow">
                 <div id="health" class="spacedColumn">
-                <vpl-label suffix="A">
-                    <vpl-pips id="armor"></vpl-pips>
+                <vpl-label prefix="A">
+                    <vpl-pips id="armor" slot="content"></vpl-pips>
                 </vpl-label>
-                <vpl-label suffix="S">
-                    <vpl-pips id="structure"></vpl-pips>
+                <vpl-label prefix="S">
+                    <vpl-pips id="structure" slot="content"></vpl-pips>
                 </vpl-label>    
                 </div>
             </div>
@@ -98,8 +117,19 @@ export default class UnitCard extends HTMLElement {
         this.attachShadow({mode: "open"}).appendChild(this.constructor.template.content.cloneNode(true));
 
         this.nameElem = this.shadowRoot.getElementById("name");
+
+        this.pvElem = this.shadowRoot.getElementById("pv");
+
+        this.movementElem = this.shadowRoot.getElementById("movement");
+
+        this.shortElem = this.shadowRoot.getElementById("short");
+        this.mediumElem = this.shadowRoot.getElementById("medium");
+        this.longElem = this.shadowRoot.getElementById("long");
+
         this.armorElem = this.shadowRoot.getElementById("armor");
         this.structureElem = this.shadowRoot.getElementById("structure");
+
+        this.imageElem = this.shadowRoot.getElementById("image");
 
         this._data = null;
     }
@@ -109,9 +139,15 @@ export default class UnitCard extends HTMLElement {
         setTimeout(() => {
             if (val !== this._data) {
                 this._data = val;
-                this.nameElem.textContent = `${val.name}`;
+                this.nameElem.textContent = val.name;
+                this.pvElem.textContent = val.pv;
                 this.armorElem.totalPips = val.armor;
                 this.structureElem.totalPips = val.structure;
+                this.shortElem.textContent = val.damage.short;
+                this.mediumElem.textContent = val.damage.medium;
+                this.longElem.textContent = val.damage.long;
+                this.movementElem.textContent = val.movement;
+                this.imageElem.src = val.image;
             }
         }, 1);
     }

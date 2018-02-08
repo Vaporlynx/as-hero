@@ -8,6 +8,7 @@ template.innerHTML = `
         }
     </style>
     <div id="prefix"></div>
+    <slot name="content">I AM A PRETTY BOY.</slot>
     <div id="suffix"></div>
 `;
 
@@ -29,7 +30,6 @@ export default class label extends HTMLElement {
         this.suffixElem = this.shadowRoot.getElementById("suffix");
 
         this._prefix = "";
-        this._innerHTML = "";
         this._suffix = "";
     }
 
@@ -57,16 +57,6 @@ export default class label extends HTMLElement {
 
     get suffix () {
         return this._suffix;
-    }
-
-    // TODO: get this working
-    set innerHTML (val) {
-        this._innerHTML = val;
-        console.log(val);
-    }
-
-    get innerHTML () {
-        return this._innerHTML;
     }
 }
 

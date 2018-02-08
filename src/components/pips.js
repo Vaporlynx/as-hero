@@ -59,6 +59,7 @@ export default class pips extends HTMLElement {
                 else {
                     pip.disabled = true;
                 }
+                pip.checked = true;
                 this.pipsContainerElem.appendChild(pip);
             }
         }
@@ -74,7 +75,7 @@ export default class pips extends HTMLElement {
             // Goddammit, checked?  Really?  Why cant this be value?
             this.pipsContainerElem.children[i].checked = false;
         }
-        for (let i = 0; i <= val; i++) {
+        for (let i = 0; i < val; i++) {
             this.pipsContainerElem.children[i].checked = true;
         }
     }
