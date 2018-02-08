@@ -41,30 +41,33 @@
         const mechContainerElem = document.getElementById("mechContainer");
         mechNameElem.addEventListener("keypress", async event => {
             if (event.key ===   "Enter") {
-                try {
-                const mechName = `${mechNameElem.value}`;
-                const unParsed = await window.fetch(`http://masterunitlist.info/Unit/QuickList?MinPV=1&MaxPV=999&Name=${mechName}&_=1517453647342`);
-                const data = JSON.parse(await unParsed.text()).Units;
-                for (const mech of data) {
-                    const card = document.createElement("unit-card");
-                    mech.name = mech.Name;
-                    mech.pv = mech.BFPointValue;
-                    mech.armor = mech.BFArmor;
-                    mech.structure = mech.BFStructure;
-                    mech.damage = {
-                        short: mech.BFDamageShort,
-                        medium: mech.BFDamageMedium,
-                        long: mech.BFDamageLong,
-                    };
-                    mech.movement = mech.BFMove;
-                    mech.image = mech.ImageUrl;
-                    card.data = mech;
-                    mechContainerElem.appendChild(card);
+                while (mechContainerElem.hasChildNodes()) {
+                    mechContainerElem.removeChild(mechContainerElem.lastChild);
                 }
-            }
-            catch (err) {
-                handleError(err);
-            }  
+                try {
+                    const mechName = `${mechNameElem.value}`;
+                    const unParsed = await window.fetch(`http://masterunitlist.info/Unit/QuickList?MinPV=1&MaxPV=999&Name=${mechName}&_=1517453647342`);
+                    const data = JSON.parse(await unParsed.text()).Units;
+                    for (const mech of data) {
+                        const card = document.createElement("unit-card");
+                        mech.name = mech.Name;
+                        mech.pv = mech.BFPointValue;
+                        mech.armor = mech.BFArmor;
+                        mech.structure = mech.BFStructure;
+                        mech.damage = {
+                            short: mech.BFDamageShort,
+                            medium: mech.BFDamageMedium,
+                            long: mech.BFDamageLong,
+                        };
+                        mech.movement = mech.BFMove;
+                        mech.image = mech.ImageUrl;
+                        card.data = mech;
+                        mechContainerElem.appendChild(card);
+                    }
+                }
+                catch (err) {
+                    handleError(err);
+                }  
             }
         });
     </script>
