@@ -61,7 +61,13 @@
                         };
                         mech.movement = mech.BFMove;
                         mech.image = mech.ImageUrl;
+                        mech.type = mech.BFType;
+                        mech.size = mech.BFSize;
+                        mech.role = mech.Role.Name;
+                        mech.skill = mech.Skill || 4; 
+                        mech.special = mech.BFAbilities;
                         card.data = mech;
+
                         mechContainerElem.appendChild(card);
                     }
                 }
