@@ -7,6 +7,8 @@ template.innerHTML = `
             display: flex;
             background-color: #282c38;
             --bevelBgColor: #585c86;
+            color: #fff557;
+            padding: 10px;
         }
         #cardBody {
             height: 100%;
@@ -107,7 +109,6 @@ template.innerHTML = `
         }
 
         #header {
-            height: 50px;
             justify-content: space-between;
         }
 
@@ -116,19 +117,51 @@ template.innerHTML = `
         }
 
         #mainDetails {
-            width: 400px;
+            width: 100%;
+        }
+
+        #lowerDetails {
+            height: 225px;
         }
 
         #image {
+            width: 250px;
             object-fit: contain;
             height: inherit;
+            margin-left: 10px;
+        }
+
+        #name {
+            width: 200px;
+        }
+
+        #pvContainer {
+            width: 100px;
+        }
+
+        #structureSpecials {
+            width: 100%;
+        }
+        
+        #health {
+            height: 58px;
+            justify-content: space-between;
+        }
+
+        #specialContainer {
+            height: 76px;
+        }
+
+        #criticals {
+            width: 300px;
+            margin-left: 10px;
         }
     </style>
     <div id="cardBody" class="spacedColumn">
         <div id="header" class="spacedRow">
             <div id="name" class="spacedColumn bevel trbl">
             </div>
-            <vpl-label prefix="PV:" class="bevel trbl">
+            <vpl-label prefix="PV:" id="pvContainer" class="bevel trbl">
             <div id="pv" slot="content">
             </div>
         </div>
@@ -179,7 +212,7 @@ template.innerHTML = `
             <img id="image"></img>
         </div>
         <div id="lowerDetails" class="spacedRow">
-            <div id="structureSpecials" class="spacedRow">
+            <div id="structureSpecials" class="spacedColumn">
                 <div id="health" class="spacedColumn bevel trbl">
                     <vpl-label prefix="A">
                         <vpl-pips id="armor" slot="content"></vpl-pips>
@@ -188,7 +221,7 @@ template.innerHTML = `
                         <vpl-pips id="structure" slot="content"></vpl-pips>
                     </vpl-label>    
                 </div>
-                <vpl-label prefix="Special:" class="bevel trbl">
+                <vpl-label prefix="Special:"  id="specialContainer" class="bevel trbl">
                     <div id="special" slot="content"></div>
                 </vpl-label>
             </div>
