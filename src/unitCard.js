@@ -131,6 +131,14 @@ template.innerHTML = `
             margin-left: 10px;
         }
 
+        #attributes {
+            justify-content: space-around;
+        }
+
+        #damage {
+            justify-content: space-around;
+        }
+
         #name {
             width: 200px;
         }
