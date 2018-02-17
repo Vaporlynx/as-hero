@@ -42,6 +42,13 @@
         }
         const mechNameElem = document.getElementById("mechName");
         const mechContainerElem = document.getElementById("mechContainer");
+
+        navigator.serviceWorker.register("/src/dbServiceWorker.js").then(registration => {
+            console.log("Service worker spawned.");
+        }).catch(err => {
+            handleError(err);
+        });
+
         mechNameElem.addEventListener("keypress", async event => {
             if (event.key ===  "Enter") {
                 while (mechContainerElem.hasChildNodes()) {

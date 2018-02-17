@@ -47,7 +47,7 @@ export default class label extends HTMLElement {
     }
 
     get prefix () {
-        return this._prefix;
+        return this._prefix; 
     }
 
     set suffix (val) {
