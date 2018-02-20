@@ -43,7 +43,7 @@
         const mechNameElem = document.getElementById("mechName");
         const mechContainerElem = document.getElementById("mechContainer");
 
-        navigator.serviceWorker.register("/src/dbServiceWorker.js").then(registration => {
+        navigator.serviceWorker.register("/dbServiceWorker.js").then(registration => {
             console.log("Service worker spawned.");
         }).catch(err => {
             handleError(err);
