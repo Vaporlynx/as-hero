@@ -56,7 +56,9 @@
                 }
                 try {
                     const mechName = `${mechNameElem.value}`;
-                    const unParsed = await window.fetch(`http://masterunitlist.info/Unit/QuickList?MinPV=1&MaxPV=999&Name=${mechName}&_=1517453647342`);
+                    const url = new URL("http://internalDB");
+                    url.searchParams.append("name", mechName);
+                    const unParsed = await window.fetch(url);
                     const data = JSON.parse(await unParsed.text()).Units;
                     for (const mech of data) {
                         const card = document.createElement("unit-card");
