@@ -1,3 +1,4 @@
+// TODO: turn unit cache into an indexDB (ewwwwww)
 const unitCache = {};
 const unitTypes = ["BM", "IM", "PM", "CV", "SV", "AF", "CF", "DS", "DA", "SC", "MS", "CI", "BA"];
 const validSearchParams = [
