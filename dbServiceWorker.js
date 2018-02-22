@@ -1,4 +1,4 @@
-let unitCache = {};
+const unitCache = {};
 const unitTypes = ["BM", "IM", "PM", "CV", "SV", "AF", "CF", "DS", "DA", "SC", "MS", "CI", "BA"];
 const validSearchParams = [
   "name",
@@ -42,7 +42,7 @@ const spreadObject = source => {
     spread.push(source[key]);
   }
   return spread;
-}
+};
 
 const serveOrFetch = request => {
   return new Promise(async (resolve, reject) => {
