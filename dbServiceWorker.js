@@ -1,4 +1,4 @@
-const unitCache = {};
+let unitCache = {};
 const unitTypes = ["BM", "IM", "PM", "CV", "SV", "AF", "CF", "DS", "DA", "SC", "MS", "CI", "BA"];
 const validSearchParams = [
   "name",
@@ -6,6 +6,7 @@ const validSearchParams = [
   "minPV",
   "maxPV",
 ];
+const unitPreCache = ["atlas", "awesome", "catapult"];
 
 const getNested = (source, props) => {
   let property = source;
@@ -23,6 +24,7 @@ const getNested = (source, props) => {
 
 // TODO: it looks like there is a bug with this where it overwrites the base object
 const setNested = (source, props, value) => {
+  console.log(props);
   let property = source;
   for (let i = 0; i < props.length - 1; i++) {
     if (!property[props[i]]) {
@@ -31,6 +33,7 @@ const setNested = (source, props, value) => {
     property = property[props[i]];
   }
   property[props[props.length - 1]] = value;
+
 };
 
 const spreadObject = source => {
@@ -49,7 +52,7 @@ const serveOrFetch = request => {
     }
     else {
       const response = await fetch(request);
-      const cache = await caches.open("v1");
+      const cache = await caches.open("urlCache");
       cache.put(request, response.clone());
       resolve(response);
     }
@@ -72,16 +75,19 @@ const searchUnits = url => {
       for (const unitClasses of spreadObject(unitsByType)) {
         for (const unit of spreadObject(unitClasses)) {
           unitsSearched++;
+          let valid = true;
           if (searchParams.name && !unit.name.toLowerCase().includes(searchParams.name)) {
-            break;
+            valid = false;
           }
           if (searchParams.minPV && unit.pv <= searchParams.minPV) {
-            break;
+            valid = false;
           }
           if (searchParams.maxPV && unit.pv >= searchParams.maxPV) {
-            break;
+            valid = false;
           }
-          results.push(unit);
+          if (valid) {
+            results.push(unit);
+          }
         }
       }
     }
@@ -130,5 +136,12 @@ self.addEventListener("fetch", event => {
   }
   else if (url.hostname === "internaldb") {
     event.respondWith(searchUnits(url));
+  }
+});
+
+self.addEventListener("install", async event => {
+  for (const unit of unitPreCache) {
+    const url = new URL(`http://internaldb/?name=${unit}`);
+    await searchUnits(url);
   }
 });
