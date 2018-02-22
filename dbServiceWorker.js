@@ -7,6 +7,40 @@ const validSearchParams = [
   "maxPV",
 ];
 
+const getNested = (source, props) => {
+  let property = source;
+  for (const prop of props) {
+    if (!property === undefined && !property[prop] === undefined) {
+      property = property[prop];
+    }
+    else {
+      property = undefined;
+      break;
+    }
+  }
+  return property;
+};
+
+// TODO: it looks like there is a bug with this where it overwrites the base object
+const setNested = (source, props, value) => {
+  let property = source;
+  for (let i = 0; i < props.length - 1; i++) {
+    if (!property[props[i]]) {
+      property[props[i]] = {};
+    }
+    property = property[props[i]];
+  }
+  property[props[props.length - 1]] = value;
+};
+
+const spreadObject = source => {
+  const spread = [];
+  for (const key of Object.keys(source)) {
+    spread.push(source[key]);
+  }
+  return spread;
+}
+
 const serveOrFetch = request => {
   return new Promise(async (resolve, reject) => {
     const cachedData = await caches.match(request);
@@ -32,11 +66,13 @@ const searchUnits = url => {
   }
   return new Promise(async (resolve, reject) => {
     const results = [];
+    let unitsSearched = 0;
     for (const type of searchParams.types || unitTypes) {
-      const unitsByType = unitCache[type] || [];
-      for (const unitClasses of unitsByType) {
-        for (const unit of unitClasses) {
-          if (searchParams.name && !unit.name.includes(searchParams.name)) {
+      const unitsByType = unitCache[type] || {};
+      for (const unitClasses of spreadObject(unitsByType)) {
+        for (const unit of spreadObject(unitClasses)) {
+          unitsSearched++;
+          if (searchParams.name && !unit.name.toLowerCase().includes(searchParams.name)) {
             break;
           }
           if (searchParams.minPV && unit.pv <= searchParams.minPV) {
@@ -49,9 +85,10 @@ const searchUnits = url => {
         }
       }
     }
-
-    if (!results.length) {
-      // TODO: reduce searchParams into a string of query params
+    console.log(`UnitsSearched: ${unitsSearched}`);
+    const response = new Response(JSON.stringify(results));
+    resolve(response);
+       // TODO: reduce searchParams into a string of query params
       // const queryString = Object.keys(searchParams).reduce();
       const unParsed = await fetch(`http://masterunitlist.info/Unit/QuickList${url.search}`);
       const data = JSON.parse(await unParsed.text()).Units;
@@ -76,15 +113,10 @@ const searchUnits = url => {
           class: datum.Class,
           variant: datum.Variant,
         };
-        // TODO: create a getter/setter that works with this nested structure
-        if (!unitCache[unit.type][unit.class][unit.variant]) {
-          unitCache[unit.type][unit.class][unit.variant] = unit;
+        if (!getNested(unitCache, [unit.type, unit.class, unit.variant])) {
+          setNested(unitCache, [unit.type, unit.class, unit.variant], unit);
         }
-        results.push(unit);
       }
-    }
-    const response = new Response(JSON.stringify(results));
-    resolve(response);
   });
 };
 

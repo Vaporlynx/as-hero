@@ -59,27 +59,10 @@
                     const url = new URL("http://internalDB");
                     url.searchParams.append("name", mechName);
                     const unParsed = await window.fetch(url);
-                    const data = JSON.parse(await unParsed.text()).Units;
-                    for (const mech of data) {
+                    const data = JSON.parse(await unParsed.text());
+                    for (const unit of data) {
                         const card = document.createElement("unit-card");
-                        mech.name = mech.Name;
-                        mech.pv = mech.BFPointValue;
-                        mech.armor = mech.BFArmor;
-                        mech.structure = mech.BFStructure;
-                        mech.damage = {
-                            short: mech.BFDamageShort,
-                            medium: mech.BFDamageMedium,
-                            long: mech.BFDamageLong,
-                        };
-                        mech.movement = mech.BFMove;
-                        mech.image = mech.ImageUrl;
-                        mech.type = mech.BFType;
-                        mech.size = mech.BFSize;
-                        mech.role = mech.Role.Name;
-                        mech.skill = mech.Skill || 4; 
-                        mech.special = mech.BFAbilities;
-                        card.data = mech;
-
+                        card.data = unit;
                         mechContainerElem.appendChild(card);
                     }
                 }
