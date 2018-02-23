@@ -1,5 +1,5 @@
-// TODO: turn unit cache into an indexDB (ewwwwww)
 let unitDB = null;
+let imageDB = null;
 const currentRequests = {};
 const unitTypes = ["BM", "IM", "PM", "CV", "SV", "AF", "CF", "DS", "DA", "SC", "MS", "CI", "BA"];
 const validSearchParams = [
@@ -10,47 +10,64 @@ const validSearchParams = [
 ];
 const unitPreCache = ["atlas", "awesome", "catapult"];
 
-// const getNested = (source, props) => {
-//   let property = source;
-//   for (const prop of props) {
-//     if (!property === undefined && !property[prop] === undefined) {
-//       property = property[prop];
-//     }
-//     else {
-//       property = undefined;
-//       break;
-//     }
-//   }
-//   return property;
-// };
-
-const dbConnection = indexedDB.open("unitDB", 1);
-dbConnection.onerror = event => {
-  console.log("error opening db");
+const unitDBConnection = indexedDB.open("unitDB", 1);
+unitDBConnection.onerror = event => {
+  console.log("error opening unitDB");
 };
 
-dbConnection.onupgradeneeded = event => {
+unitDBConnection.onupgradeneeded = event => {
   for (const unitType of unitTypes) {
     event.target.result.createObjectStore(unitType, {keyPath: "name"});
   }
 };
 
-const getUnit = (type, name) => {
+const imageDBConnection = indexedDB.open("imageDB", 1);
+imageDBConnection.onerror = event => {
+  console.log("error opening imageDB");
+};
+
+imageDBConnection.onupgradeneeded = event => {
+  event.target.result.createObjectStore("images", {keyPath: "url"});
+};
+
+const getImage = url => {
   return new Promise((resolve, reject) => {
-    if (unitDB) {
-      const request = unitDB.transaction(type).objectStore(type).get(name);
-      request.onerror = event => {
-        reject(`Failed to get read transaction for type: ${type}, name: ${name}`);
-      };
-      request.onsuccess = event => {
-        resolve(request.result);
-      };
+    if (imageDB) {
+      try {
+        const request = imageDB.transaction("images").objectStore("images").get(url);
+        request.onsuccess = event => {
+          resolve(request.result);
+        };
+      }
+      catch (err) {
+        reject(`Failed to fetch image for url: ${url}`);
+      }
     }
     else {
-      reject("Unit database not initialized!");
+      reject("Image database not initialized!");
     }
   });
 };
+
+const setImage = (url,  data) => {
+  return new Promise((resolve, reject) => {
+    if (imageDB) {
+      try {
+        const request = imageDB.transaction("image", "readwrite").objectStore("image").put({url, data});
+        request.onsuccess = event => {
+          resolve();
+        };
+      }
+      catch (err) {
+        reject(`setImage failed for url: ${url}`);
+      }
+    }
+    else {
+      reject("Image database not initialized!");
+    }
+  });
+};
+
 
 const getUnits = type => {
   return new Promise((resolve, reject) => {
@@ -89,6 +106,10 @@ const setUnit = (type,  data) => {
 };
 
 const serveOrFetch = request => {
+  const url = new URL(request.url);
+  fetch(url).then(response => response.blob()).then(blob => URL.createObjectURL(blob)).then(data => {
+    console.log("data?");
+  });
   return new Promise(async (resolve, reject) => {
     const cachedData = await caches.match(request);
     if (cachedData) {
@@ -171,23 +192,28 @@ const searchUnits = url => {
   });
 };
 
-dbConnection.onsuccess = async event => {
+unitDBConnection.onsuccess = async event => {
   unitDB = event.target.result;
+  // Prefetch most common units
   for (const unit of unitPreCache) {
     const url = new URL(`http://internaldb/?name=${unit}`);
     await searchUnits(url);
   }
 };
 
+imageDBConnection.onsuccess = async event => {
+  imageDB = event.target.result;
+};
+
 self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
-  if (url.pathname.includes("mul-images")) {
+  if (url.pathname === "/Unit/QuickList") {
     event.respondWith(serveOrFetch(event.request));
   }
-  else if (url.pathname === "/Unit/QuickList") {
-    event.respondWith(serveOrFetch(event.request));
+  else if (url.hostname === "sw-units") {
+    event.respondWith(searchUnits(url));
   }
-  else if (url.hostname === "internaldb") {
+  else if (url.hostname === "sw-images") {
     event.respondWith(searchUnits(url));
   }
 });
