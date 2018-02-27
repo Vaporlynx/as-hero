@@ -3,6 +3,7 @@
         "criticals",
         "internaldb",
         "keypress",
+        "promisify",
         "readwrite"
     ]
 }
