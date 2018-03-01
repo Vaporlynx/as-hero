@@ -24,8 +24,11 @@
             margin-top: 10px;
         }
 
-        #mechName {
-            width: 30em;
+
+        #searchContainer {
+            height: 22px;
+            width: 180px;
+            display: flex;
         }
 
         @keyframes spin {
@@ -49,7 +52,7 @@
     </style>
 
     <vpl-label prefix="Mech Name:">
-        <div slot="content">
+        <div slot="content" id="searchContainer">
             <input type="text" id="mechName"></input>
             <img src="/assets/spinner.svg" id="spinner"></img>
         </div>
@@ -90,7 +93,7 @@
                     }
                 }
                 catch (err) {
-                    handleError(err);
+                    handleError(`Error getting unit: ${err}`);
                 }  
             }
         });

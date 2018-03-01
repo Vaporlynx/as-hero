@@ -9,9 +9,13 @@ const validSearchParams = [
   "maxPV",
 ];
 
+const handleError = err => {
+  console.log(err);
+};
+
 const unitDBConnection = indexedDB.open("unitDB", 1);
 unitDBConnection.onerror = event => {
-  console.log("error opening unitDB");
+  handleError("error opening unitDB");
 };
 
 unitDBConnection.onupgradeneeded = event => {
@@ -22,7 +26,7 @@ unitDBConnection.onupgradeneeded = event => {
 
 const imageDBConnection = indexedDB.open("imageDB", 1);
 imageDBConnection.onerror = event => {
-  console.log("error opening imageDB");
+  handleError("error opening imageDB");
 };
 
 imageDBConnection.onupgradeneeded = event => {
@@ -106,7 +110,7 @@ const setUnit = (type,  data) => {
 const serveOrFetch = request => {
   const url = new URL(request.url);
   fetch(url).then(response => response.blob()).then(blob => URL.createObjectURL(blob)).then(data => {
-    console.log("data?");
+    handleError("data?");
   });
   return new Promise(async (resolve, reject) => {
     const cachedData = await caches.match(request);
@@ -214,7 +218,7 @@ unitDBConnection.onsuccess = event => {
         setUnit(unit.type, unit);
       }
     }).catch(err => {
-      console.log(`Failed to get bundled def for type ${type}`);
+      handleError(`Failed to get bundled def for type ${type}`);
     });
   }
 };
