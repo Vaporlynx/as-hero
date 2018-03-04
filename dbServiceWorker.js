@@ -127,11 +127,16 @@ const serveOrFetch = request => {
 };
 
 const searchUnits = url => {
-  const searchParams = {};
+  const searchParams = {ids: []};
   for (const key of validSearchParams) {
     const value = url.searchParams.get(key);
-    if (value) {
-      searchParams[key] = value;
+    if (key === "id") {
+      searchParams.ids.push(value);
+    }
+    else {
+      if (value) {
+        searchParams[key] = value;
+      }
     }
   }
   return new Promise(async (resolve, reject) => {
@@ -140,13 +145,16 @@ const searchUnits = url => {
       const units = await getUnits(type);
       for (const unit of units) {
         let valid = true;
-        if (searchParams.name && !unit.name.toLowerCase().includes(searchParams.name)) {
+        if (valid && searchParams.ids.length && !searchParams.ids.includes(unit.id)) {
           valid = false;
         }
-        if (searchParams.minPV && unit.pv <= searchParams.minPV) {
+        if (valid && searchParams.name && !unit.name.toLowerCase().includes(searchParams.name)) {
           valid = false;
         }
-        if (searchParams.maxPV && unit.pv >= searchParams.maxPV) {
+        if (valid && searchParams.minPV && unit.pv <= searchParams.minPV) {
+          valid = false;
+        }
+        if (valid && searchParams.maxPV && unit.pv >= searchParams.maxPV) {
           valid = false;
         }
         if (valid) {

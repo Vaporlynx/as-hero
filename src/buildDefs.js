@@ -70,12 +70,6 @@ const getUnits = async () => {
         console.log(`Searching, finished at ${new Date().toString()}`);
         for (const key of Object.keys(unitsByType)) {
             const units = unitsByType[key];
-            try {
-                await copy(`../defs/${key}-def.json`, `../defs/${key}-def-backup.json`);
-            }
-            catch (err) {
-                // Ignore errors about backing up the file, it may not be there
-            }
             await write(`../defs/${key}-def.json`, JSON.stringify(units));
         }
         console.log(`Finished writing defs at ${new Date().toString()}`);
