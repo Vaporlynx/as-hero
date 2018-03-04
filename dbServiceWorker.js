@@ -173,12 +173,18 @@ const searchUnits = url => {
     resolve(response);
     // Don't sync with MUL it is not HTTPS
     // const queryString = Object.keys(searchParams).reduce((queryString, key) => {
-    //   return `${queryString}${key}=${searchParams[key]}`;
+    //   if (key === "ids") {
+    //     return queryString;
+    //   }
+    //   else {
+    //     return `${queryString}${key}=${searchParams[key]}`;
+    //   }
     // }, "?");
-    // currentRequests[url] = fetch(`http://masterunitlist.info/Unit/QuickList${queryString}`)
+    // fetch(`http://masterunitlist.info/Unit/QuickList${queryString}`)
     //   .then(request => request.text()).then(unParsed => JSON.parse(unParsed).Units).then(data => {
     //   for (const datum of data) {
     //     const unit = {
+    //       id: datum.Id,
     //       name: datum.Name,
     //       pv: datum.BFPointValue,
     //       armor: datum.BFArmor,
@@ -198,9 +204,9 @@ const searchUnits = url => {
     //       class: datum.Class,
     //       variant: datum.Variant,
     //     };
-        //  setUnit(unit.type, unit);
+    //     setUnit(unit.type || "null", unit);
     //   }
-    // });
+    // }).catch(console.log);
   });
 };
 

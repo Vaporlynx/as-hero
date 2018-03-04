@@ -67,7 +67,7 @@ const getUnits = async () => {
     const queryQueue = [];
     const manageQueue = () => {
         if (words.length) {
-            if (queryQueue.length <= 20) {
+            if (queryQueue.length <= 10) {
                 const word = words.pop();
                 queryQueue.push(word);
                 searchByString(word).then(() => {
