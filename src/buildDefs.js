@@ -59,7 +59,7 @@ const getUnits = async () => {
     };
     console.log(`Searching, started at ${new Date().toString()}`);
     const words = [];
-    for (const vowel of ["y"]) {
+    for (const vowel of ["a", "e", "i", "o", "u", "y"]) {
         for (const letter of letters) {
             words.push(`${vowel}${letter}`);
         }
