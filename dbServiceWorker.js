@@ -140,7 +140,7 @@ const searchUnits = url => {
     }
   }
   return new Promise(async (resolve, reject) => {
-    const results = [];
+    let results = [];
     for (const type of searchParams.types || unitTypes) {
       const units = await getUnits(type);
       for (const unit of units) {
@@ -160,6 +160,13 @@ const searchUnits = url => {
         if (valid) {
           results.push(unit);
         }
+      }
+    }
+    if (searchParams.ids.length) {
+      const resultsCopy = results;
+      results = [];
+      for (const id of searchParams.ids) {
+        results.push(resultsCopy.find(i => i.id = id));
       }
     }
     const response = new Response(JSON.stringify(results));

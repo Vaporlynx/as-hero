@@ -5,8 +5,6 @@ const getUnits = async () => {
     const request = require("request-promise-native");
 
     const write = util.promisify(fs.writeFile);
-    const read = util.promisify(fs.readFile);
-    const copy = async (src, dest) => await write(dest, await read(src));
 
     const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
     const unitsByType = {};
