@@ -5,6 +5,8 @@ const getUnits = async () => {
     const request = require("request-promise-native");
 
     const write = util.promisify(fs.writeFile);
+    const read = util.promisify(fs.readFile);
+    const copy = async (src, dest) => await write(dest, await read(src));
 
     const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
     const unitsByType = {};
@@ -19,6 +21,7 @@ const getUnits = async () => {
                 console.log(`${workingString} returned ${parsed.Units.length} results`);
                 for (const Unit of parsed.Units) {
                     const unit = {
+                        id: Unit.Id,
                         nm: Unit.Name,
                         pv: Unit.BFPointValue,
                         ar: Unit.BFArmor,
@@ -67,6 +70,12 @@ const getUnits = async () => {
         console.log(`Searching, finished at ${new Date().toString()}`);
         for (const key of Object.keys(unitsByType)) {
             const units = unitsByType[key];
+            try {
+                await copy(`../defs/${key}-def.json`, `../defs/${key}-def-backup.json`);
+            }
+            catch (err) {
+                // Ignore errors about backing up the file, it may not be there
+            }
             await write(`../defs/${key}-def.json`, JSON.stringify(units));
         }
         console.log(`Finished writing defs at ${new Date().toString()}`);
