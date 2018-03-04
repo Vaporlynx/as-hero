@@ -52,19 +52,22 @@ const getUnits = async () => {
                 }
                 resolve(totalFound);
             }
+            else {
+                resolve(0);
+            }
         });
     };
     console.log(`Searching, started at ${new Date().toString()}`);
     const words = [];
-    for (const vowel of ["a", "e", "i", "o", "u", "y"]) {
+    for (const vowel of ["y"]) {
         for (const letter of letters) {
             words.push(`${vowel}${letter}`);
         }
     }
     const queryQueue = [];
-    const manageQueue = async () => {
+    const manageQueue = () => {
         if (words.length) {
-            if (queryQueue.length <= 10) {
+            if (queryQueue.length <= 20) {
                 const word = words.pop();
                 queryQueue.push(word);
                 searchByString(word).then(() => {
@@ -76,17 +79,19 @@ const getUnits = async () => {
             }
         }
         else if (queryQueue.length === 0) {
-            console.log(`Searching, finished at ${new Date().toString()}`);
-            for (const key of Object.keys(unitsByType)) {
-                const units = unitsByType[key];
-                await write(`../defs/${key}-def.json`, JSON.stringify(units));
-            }
-            console.log(`Finished writing defs at ${new Date().toString()}`);
             return;
         }
-        setTimeout(() => {
+        setTimeout(async () => {
             if (words.length || queryQueue.length) {
                 manageQueue();
+            }
+            else {
+                console.log(`Searching, finished at ${new Date().toString()}`);
+                for (const key of Object.keys(unitsByType)) {
+                    const units = unitsByType[key];
+                    await write(`${__dirname}/../defs/${key}-def.json`, JSON.stringify(units));
+                }
+                console.log(`Finished writing defs at ${new Date().toString()}`);
             }
         }, 1000);
     };
