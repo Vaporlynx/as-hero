@@ -66,7 +66,7 @@ const getUnits = async () => {
             searchByString("o"),
             searchByString("u"),
             searchByString("y"),
-        ])
+        ]);
         console.log(`Searching, finished at ${new Date().toString()}`);
         for (const key of Object.keys(unitsByType)) {
             const units = unitsByType[key];
