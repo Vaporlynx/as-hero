@@ -15,43 +15,24 @@
             font-family: Ubuntu, sans-serif;
         }
     </style>
-    <script type="module">
+    <script>
         const globals = {
             handleError: err => {
                 window.alert(err);
             },
         };
     </script>
+    <script type="module" src = "/src/urlHelper.js"></script>
+
     <script type="module" src = "/src/components/pips.js"></script>
     <script type="module" src = "/src/components/label.js"></script>
     <script type="module" src = "/src/components/unitCard.js"></script>
-    <script type="module" src = "/src/urlHelper.js"></script>
+    
     <script type="module" src = "/src/pages/search.js"></script>
     <script type="module" src = "/src/pages/roster.js"></script>
-    <div id="pageContainer">
-    </div>
-    <script type="module">
-        import * as urlHelper from "../src/urlHelper.js";
-
-        navigator.serviceWorker.register("/dbServiceWorker.js").then(registration => {
-            console.log(`Service worker spawned on ${registration.scope}`);
-        }).catch(err => {
-            globals.handleError(err);
-        });
-        
-        window.addEventListener("hashchange", event => {
-            console.log("hashChange");
-            urlHelper.getParams();
-        });
-
-        window.addEventListener("popstate", event => {
-            console.log("popstate");
-            urlHelper.getParams();
-        });
-
-        if (!urlHelper.getParams().page) {
-            urlHelper.setParams({page: "search"});
-        }
-    </script>
+    <script type="module" src = "/src/pages/loading.js"></script>
+    
+    <div id="pageContainer"></div>
+    <script type="module" src = "/src/index.js"></script>
 </body>
 </html>

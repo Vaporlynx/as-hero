@@ -22,7 +22,7 @@ const push = (newParams = params) => {
 
 window.addEventListener("hashchange", () => {
     pull();
-    window.dispatchEvent(new CustomEvent("URLUpdated"));
+    window.dispatchEvent(new CustomEvent("urlUpdated"));
 });
 
 export const getParams = () => {
@@ -37,7 +37,7 @@ export const setParams = (newParams, replace) => {
         Object.assign(params, newParams);
         push();
     }
-    window.dispatchEvent(new CustomEvent("URLUpdated"));
+    window.dispatchEvent(new CustomEvent("urlUpdated"));
 };
 
 export const consumeParams = keys => {

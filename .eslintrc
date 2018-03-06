@@ -56,7 +56,7 @@
   },
   "globals": {
     "customElements": true,
-    "Fuse": true,
+    "globals": true,
     "require": true,
     "currentMech": true,
     "defs": true
