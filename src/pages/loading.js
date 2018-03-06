@@ -15,7 +15,6 @@ template.innerHTML = `
     }
 
     #progressIndicator {
-        width: 60%;
         font-size: 64px;
     }
 
@@ -77,7 +76,9 @@ export default class rosterPage extends HTMLElement {
                 }
             }
             else {
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
             }
         }
         catch (err) {

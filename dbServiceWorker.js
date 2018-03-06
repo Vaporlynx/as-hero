@@ -132,11 +132,11 @@ const searchUnits = url => {
   const searchParams = {ids: []};
   for (const key of validSearchParams) {
     const value = url.searchParams.get(key);
-    if (key === "unitIds") {
-      searchParams.ids.push(value);
-    }
-    else {
-      if (value) {
+    if (value) {
+      if (key === "unitIds") {
+        searchParams.ids.push(value);
+      }
+      else {
         searchParams[key] = value;
       }
     }
