@@ -65,15 +65,17 @@ export default class searchPage extends HTMLElement {
         this.mechContainerElem = this.shadowRoot.getElementById("mechContainer");
         this.spinnerElem = this.shadowRoot.getElementById("spinner");
 
-        if (urlHelper.getParams().unitName) {
-            this.searchUnit(this.mechNameElem.value = urlHelper.consumeParams(["unitName"]).unitName);
-        }
-
         this.mechNameElem.addEventListener("keypress", async event => {
             if (event.key ===  "Enter") {
                 this.searchUnit(this.mechNameElem.value);
             }
         });
+    }
+
+    connectedCallback() {
+        if (urlHelper.getParams().unitName) {
+            this.searchUnit(this.mechNameElem.value = urlHelper.consumeParams(["unitName"]).unitName);
+        }
     }
 
     async searchUnit(name) {

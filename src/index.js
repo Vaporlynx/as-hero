@@ -18,7 +18,8 @@ const handleNavigation = () => {
         while (pageContainerElem.hasChildNodes()) {
             pageContainerElem.removeChild(pageContainerElem.lastChild);
         }
-        pageContainerElem.appendChild(document.createElement(`${params.page}-page`));
+        const newPage = document.createElement(`${params.page}-page`)
+        pageContainerElem.appendChild(newPage);
     }
 };
 
