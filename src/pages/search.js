@@ -1,4 +1,4 @@
-import * as router from "../../src/router.js";
+import * as urlHelper from "../../src/urlHelper.js";
 
 const template = document.createElement("template");
 template.innerHTML = `
@@ -65,8 +65,8 @@ export default class searchPage extends HTMLElement {
         this.mechContainerElem = this.shadowRoot.getElementById("mechContainer");
         this.spinnerElem = this.shadowRoot.getElementById("spinner");
 
-        if (router.getParams().unitName) {
-            this.searchUnit(this.mechNameElem.value = router.consumeParams(["unitName"]).unitName);
+        if (urlHelper.getParams().unitName) {
+            this.searchUnit(this.mechNameElem.value = urlHelper.consumeParams(["unitName"]).unitName);
         }
 
         this.mechNameElem.addEventListener("keypress", async event => {
@@ -83,7 +83,7 @@ export default class searchPage extends HTMLElement {
         }
         try {
             const unitName = name;
-            router.setParams({unitName});
+            urlHelper.setParams({unitName});
             const unParsed = await window.fetch(`/sw-units?name=${unitName}`);
             this.spinnerElem.classList.remove("show");
             const data = JSON.parse(await unParsed.text());

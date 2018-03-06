@@ -15,32 +15,43 @@
             font-family: Ubuntu, sans-serif;
         }
     </style>
-    <script type="module" src = "/src/components/pips.js"></script>
-    <script type="module" src = "/src/components/label.js"></script>
-    <script type="module" src = "/src/components/unitCard.js"></script>
-    <script type="module" src = "/src/router.js"></script>
-    <script type="module" src = "/src/pages/search.js"></script>
-    <div id="pageContainer">
-            <search-page></search-page>
-    </div>
     <script type="module">
-        import * as router from "../src/router.js";
         const globals = {
             handleError: err => {
                 window.alert(err);
             },
         };
+    </script>
+    <script type="module" src = "/src/components/pips.js"></script>
+    <script type="module" src = "/src/components/label.js"></script>
+    <script type="module" src = "/src/components/unitCard.js"></script>
+    <script type="module" src = "/src/urlHelper.js"></script>
+    <script type="module" src = "/src/pages/search.js"></script>
+    <script type="module" src = "/src/pages/roster.js"></script>
+    <div id="pageContainer">
+    </div>
+    <script type="module">
+        import * as urlHelper from "../src/urlHelper.js";
 
         navigator.serviceWorker.register("/dbServiceWorker.js").then(registration => {
-            globals.handleError(`Service worker spawned on ${registration.scope}`);
+            console.log(`Service worker spawned on ${registration.scope}`);
         }).catch(err => {
             globals.handleError(err);
         });
         
-        window.addEventListener("hashchange", () => {
-           router.getParams;
+        window.addEventListener("hashchange", event => {
+            console.log("hashChange");
+            urlHelper.getParams();
         });
 
+        window.addEventListener("popstate", event => {
+            console.log("popstate");
+            urlHelper.getParams();
+        });
+
+        if (!urlHelper.getParams().page) {
+            urlHelper.setParams({page: "search"});
+        }
     </script>
 </body>
 </html>

@@ -17,11 +17,12 @@ const push = (newParams = params) => {
         newParams.page = "search";
     }
     const newHash = Object.keys(newParams).reduce((hash, key) => `${hash}${hash === "#" ? "" : "&"}${key}=${newParams[key]}`, "#");
-    history.pushState(null, null, newHash);
+    history.pushState(params, "", newHash);
 };
 
 window.addEventListener("hashchange", () => {
     pull();
+    window.dispatchEvent(new CustomEvent("URLUpdated"));
 });
 
 export const getParams = () => {
@@ -36,6 +37,7 @@ export const setParams = (newParams, replace) => {
         Object.assign(params, newParams);
         push();
     }
+    window.dispatchEvent(new CustomEvent("URLUpdated"));
 };
 
 export const consumeParams = keys => {
