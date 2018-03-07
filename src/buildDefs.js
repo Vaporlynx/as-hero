@@ -84,7 +84,10 @@ const getUnits = async () => {
                 queryQueue.push(word);
                 searchByString(word).then(() => queryQueue.splice(queryQueue.indexOf(word), 1)).catch(err => {
                     console.log(`Search failed for: ${word}, err: ${err}`);
-                    words.push(queryQueue.splice(queryQueue.indexOf(word), 1));
+                    queryQueue.splice(queryQueue.indexOf(word), 1);
+                    setTimeout(() => {
+                        words.push(word);
+                    }, 100);
                 });
             }
         }
