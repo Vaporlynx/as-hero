@@ -5,12 +5,18 @@ template.innerHTML = `
     <style>
         :host {
             font-size: 16px;
+            display: grid;
+            grid-template: 32px / 1fr;
+            grid-template-areas: "searchBar"
+                                 "units";
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
     
         #mechContainer {
-            display: flex;
-            flex-direction: column;
-            flex-wrap:wrap 
+            grid-area: units;
+            overflow: auto;
         }
         #mechContainer > * {
             margin-top: 10px;
@@ -28,6 +34,7 @@ template.innerHTML = `
 
         #label {
             font-size: 24px;
+            grid-area: searchBar
         }
 
         @keyframes spin {
@@ -52,6 +59,9 @@ template.innerHTML = `
         #unitName {
             width: 100%;
             height: 100%;
+            background-color: #6d6d6d;
+            border: none;
+            color: #dadada;
         }
     </style>
 
