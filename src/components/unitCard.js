@@ -10,6 +10,7 @@ template.innerHTML = `
             color: #fff557;
             padding: 10px;
         }
+        
         #cardBody {
             height: 100%;
             width: 100%;
@@ -220,10 +221,12 @@ template.innerHTML = `
                     </vpl-label>
                 </div>
                 <div id="heat" class="spacedRow bevel trbl">
-                    <div id="overheat>
-                    </div>
-                    <div id="heatScale">
-                    </div>
+                    <vpl-label prefix="OV:">
+                        <div id="overheat" slot="content"></div>
+                    </vpl-label>
+                    <vpl-label prefix="Heat Scale">
+                        <vpl-pips id="heatScale" slot="content" total-pips="4" marked="0"></vpl-pips>
+                    </vpl-label>
                 </div>
             </div>
             <img id="image"></img>
@@ -273,6 +276,8 @@ export default class UnitCard extends HTMLElement {
         this.armorElem = this.shadowRoot.getElementById("armor");
         this.structureElem = this.shadowRoot.getElementById("structure");
 
+        this.overheatElem = this.shadowRoot.getElementById("overheat");
+
         this.specialElem = this.shadowRoot.getElementById("special");
 
         this.criticalsElem = this.shadowRoot.getElementById("criticals");
@@ -299,6 +304,7 @@ export default class UnitCard extends HTMLElement {
                 this.longElem.textContent = val.damage.long;
                 this.armorElem.totalPips = val.armor;
                 this.structureElem.totalPips = val.structure;
+                this.overheatElem.textContent = val.overheat || 0;
                 this.specialElem.textContent = val.special;
                 this.imageElem.src = val.image;
                 let critElem = null;
