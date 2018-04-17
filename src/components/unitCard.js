@@ -325,7 +325,7 @@ export default class UnitCard extends HTMLElement {
                     case 6: skillMod = 0.77; break;
                     case 7: skillMod = 0.68; break;
                 }
-                this.pvElem.textContent = val.pv * skillMod;
+                this.pvElem.textContent = Math.round(val.pv * skillMod);
             }
         }, 1);
     }
