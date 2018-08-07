@@ -80,24 +80,12 @@ template.innerHTML = `
         }
 
         .cardContainer {
+            width: 700px;
+            height: 500px;
             position: relative;
         }
 
-        .rosterControlsContainer {
-            width: 200px;
-            height: 50px;
-            background-color: #3d3d4e;    
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
-            justify-content: space-between;
-        }
-
-        .alterRosterButton {
-            width: 48px;
-            height: 48px;
-            background-color: blue;
-            font-size: 48px;
+        vpl-add-remove-units {
         }
     </style>
     <div id="controls">
@@ -160,28 +148,12 @@ export default class searchPage extends HTMLElement {
             this.spinnerElem.classList.remove("show");
             const data = JSON.parse(await unParsed.text());
             for (const unit of data) {
-                // TODO: create a template for all this stuff
                 const card = document.createElement("unit-card");
                 card.data = unit;
-                const rosterControlsContainer = document.createElement("div");
-                rosterControlsContainer.classList.add("rosterControlsContainer", "spacedRow");
-                const addUnit = document.createElement("div");
-                addUnit.innerText = "+";
-                addUnit.classList.add("alterRosterButton");
-                const removeUnit = document.createElement("div");
-                removeUnit.innerText = "-";
-                removeUnit.classList.add("alterRosterButton");
-                addUnit.addEventListener("pointerdown", () => {
-                    this.addUnit(card.data.id);
-                });
-                removeUnit.addEventListener("pointerdown", () => {
-                    this.removeUnit(card.data.id);
-                });
-                rosterControlsContainer.appendChild(addUnit);
-                rosterControlsContainer.appendChild(removeUnit);
+                const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
                 const cardContainer = document.createElement("div");
                 cardContainer.classList.add("cardContainer");
-                cardContainer.appendChild(rosterControlsContainer);
+                cardContainer.appendChild(addRemoveUnitsElem);
                 cardContainer.appendChild(card);
                 this.mechContainerElem.appendChild(cardContainer);
             }

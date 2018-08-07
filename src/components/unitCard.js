@@ -2,8 +2,6 @@ const template = document.createElement("template");
 template.innerHTML = `
     <style>
         :host {
-            width: 700px;
-            height: 500px;
             display: flex;
             background-color: #282c38;
             --bevelBgColor: #585c86;
