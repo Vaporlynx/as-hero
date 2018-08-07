@@ -80,14 +80,15 @@ template.innerHTML = `
         }
 
         .cardContainer {
-            // 7:5 width to height
+            <!--7:5 width to height-->
             width: 100vw;
             height: 71.42vw;
             position: relative;
             font-size: 2vw;
         }
 
-        vpl-add-remove-units {
+        unit-card {
+            --pipSize: 2vw;
         }
     </style>
     <div id="controls">
@@ -98,6 +99,7 @@ template.innerHTML = `
             </div>
         </vpl-label>
         <button id="roster">Roster</button>
+        <button id="clear">Clear Roster</button>
     </div>
     <div id="mechContainer"> </div>
 `;
@@ -123,6 +125,11 @@ export default class searchPage extends HTMLElement {
             urlHelper.setParams({
                 page: "roster",
             });
+        });
+
+        this.clearElem = this.shadowRoot.getElementById("clear");
+        this.clearElem.addEventListener("pointerdown", event => {
+            urlHelper.consumeParams(["unitIds"]);
         });
 
         this.unitNameElem.addEventListener("keypress", async event => {
@@ -153,7 +160,13 @@ export default class searchPage extends HTMLElement {
                 const card = document.createElement("unit-card");
                 card.data = unit;
                 const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
+                addRemoveUnitsElem.addEventListener("add", event => {
+                    this.addUnit(unit.id);
+                });
                 const cardContainer = document.createElement("div");
+                addRemoveUnitsElem.addEventListener("remove", event => {
+                    this.removeUnit(unit.id);
+                });
                 cardContainer.classList.add("cardContainer");
                 cardContainer.appendChild(addRemoveUnitsElem);
                 cardContainer.appendChild(card);

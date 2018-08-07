@@ -7,15 +7,15 @@ template.innerHTML = `
         }
 
         vpl-label {
-            --prefixWidth: 35%;
-            --suffixWidth: 30%;
+            --prefixWidth: 28%;
+            --suffixWidth: 35%;
             --prefixFontSize: 75%;
             --suffixFontSize: 70%;
             margin-bottom: 10px;
         }
 
         vpl-pips {
-            width: 30%;
+            width: 35%;
         }
 
     </style>

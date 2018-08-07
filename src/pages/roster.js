@@ -11,6 +11,9 @@ template.innerHTML = `
             overflow: hidden;
             height: 100vh;
             width: 100vw;
+
+            --cardRows: 1;
+            --cardSizeOffset: 0.955;
         }
 
         #controls {
@@ -29,6 +32,11 @@ template.innerHTML = `
 
         #roster > unit-card {
             margin: 5px;
+            width: calc(100vw / var(--cardRows) * var(--cardSizeOffset));
+            height: calc(71.42vw / var(--cardRows) * var(--cardSizeOffset));
+            position: relative;
+            font-size: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
+            --pipSize: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
         }
     </style>
 
@@ -65,7 +73,7 @@ export default class rosterPage extends HTMLElement {
             });
         });
     }
-    
+
     connectedCallback() {
         window.addEventListener("urlUpdated", this.handleUrlUpdated);
     }
@@ -76,7 +84,7 @@ export default class rosterPage extends HTMLElement {
 
     getIdsFromUrl() {
         if (urlHelper.getParams().unitIds) {
-            return urlHelper.consumeParams(["unitIds"]).unitIds.split(",").map(id => parseInt(id))
+            return urlHelper.getParams(["unitIds"]).unitIds.split(",").map(id => parseInt(id));
         }
         return [];
     }

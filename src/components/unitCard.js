@@ -311,7 +311,7 @@ export default class UnitCard extends HTMLElement {
                 this.armorElem.totalPips = val.armor;
                 this.structureElem.totalPips = val.structure;
                 this.overheatElem.textContent = val.overheat || 0;
-                this.specialElem.textContent = `Special: ${val.special.split(",").join(", ")}`;
+                this.specialElem.textContent = `Special: ${val.special ? val.special.split(",").join(", ") : ""}`;
                 this.imageElem.src = val.image;
                 let critElem = null;
                 switch (val.type) {
