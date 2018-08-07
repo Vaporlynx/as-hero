@@ -4,8 +4,9 @@ template.innerHTML = `
         :host {
             display: flex;
             width: 200px;
-            height: 50px;
-            background-color: #3d3d4e;    
+            height: 50px;  
+            background-color: var(--nonInteractiveElementBackgroundColor);
+            color: var(--nonInteractiveElementBackgroundFontColor);
             position: absolute;
             bottom: 0px;
             right: 0px;
@@ -19,8 +20,11 @@ template.innerHTML = `
         div {
             width: 48px;
             height: 48px;
-            background-color: blue;
+            background-color: var(--interactiveElementBackgroundColor);
             font-size: 48px;
+        }
+        div:hover {
+            background-color: var(--interactiveElementHoverBackgroundColor);
         }
 
         #mech {

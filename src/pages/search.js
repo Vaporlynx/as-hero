@@ -35,7 +35,7 @@ template.innerHTML = `
             overflow: auto;
         }
         #mechContainer > * {
-            margin-top: 10px;
+            margin-bottom: 24px;
         }
 
         #searchContainer {
@@ -80,9 +80,11 @@ template.innerHTML = `
         }
 
         .cardContainer {
-            width: 700px;
-            height: 500px;
+            // 7:5 width to height
+            width: 100vw;
+            height: 71.42vw;
             position: relative;
+            font-size: 2vw;
         }
 
         vpl-add-remove-units {

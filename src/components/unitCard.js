@@ -3,15 +3,16 @@ template.innerHTML = `
     <style>
         :host {
             display: flex;
-            background-color: #282c38;
-            --bevelBgColor: #585c86;
-            color: #fff557;
+            height: 100%;
+            background-color: var(--nonInteractiveElementBackgroundColor);
+            color: var(--nonInteractiveElementBackgroundFontColor);
             padding: 10px;
+            --bevelBgColor: var(--nonInteractiveElement2BackgroundColor);
         }
         
         #cardBody {
-            height: 100%;
-            width: 100%;
+            height: inherit;
+            width: inherit;
         }
     
         .spacedRow {
@@ -109,24 +110,31 @@ template.innerHTML = `
 
         #header {
             justify-content: space-between;
+            height: 10%;
+            font-weight: bold;
+            font-size: 125%;
         }
 
         #upperDetails {
-            height: 200px;
+            height: 40%;
+            font-size: 130%;
         }
 
         #mainDetails {
-            width: 100%;
+            width: 70%;
+        }
+        #mainDetails div {
+            height: 30%;
         }
 
         #lowerDetails {
-            height: 225px;
+            height: 50%;
+            font-size: 140%;
         }
 
         #image {
-            width: 250px;
+            width: 30%;
             object-fit: contain;
-            height: inherit;
             margin-left: 10px;
             padding-bottom: 15px;
         }
@@ -140,37 +148,37 @@ template.innerHTML = `
         }
 
         #name {
-            width: 200px;
         }
 
         #pvContainer {
-            width: 50px;
         }
 
         #structureSpecials {
-            width: 100%;
+            width: 60%;
         }
         
         #health {
-            height: 58px;
+            height: 40%;
             justify-content: space-between;
         }
 
-        #specialContainer {
-            height: 76px;
+        #special {
+            height: 60%;
+            word-wrap: break-word;
         }
 
         #criticalsContainer {
+            width: 40%;
             display: flex;
             flex-direction: column;
-            width: 500px;
             margin-left: 10px;
             align-items: center;
-            font-size: 20px;
         }
 
         #criticals {
-            font-size: 12px;
+            width: 100%;
+            height: 100%;
+            display: flex;
         }
     </style>
     <div id="cardBody" class="spacedColumn">
@@ -241,12 +249,10 @@ template.innerHTML = `
                         <vpl-pips id="structure" slot="content" mode="subtractive"></vpl-pips>
                     </vpl-label>    
                 </div>
-                <vpl-label prefix="Special:"  id="specialContainer" class="bevel trbl">
-                    <div id="special" slot="content"></div>
-                </vpl-label>
+                <div id="special" class="bevel trbl"></div>
             </div>
             <vpl-label prefix="CRITICAL HITS"  id="criticalsContainer" class=" bevel trbl">
-                <div id="criticals" slot="content" class="spacedColumn"></div>
+                <div id="criticals" slot="content"></div>
             </vpl-label>
         </div>
     </div>
@@ -305,7 +311,7 @@ export default class UnitCard extends HTMLElement {
                 this.armorElem.totalPips = val.armor;
                 this.structureElem.totalPips = val.structure;
                 this.overheatElem.textContent = val.overheat || 0;
-                this.specialElem.textContent = val.special;
+                this.specialElem.textContent = `Special: ${val.special.split(",").join(", ")}`;
                 this.imageElem.src = val.image;
                 let critElem = null;
                 switch (val.type) {
