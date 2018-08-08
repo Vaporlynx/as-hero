@@ -13,7 +13,7 @@ template.innerHTML = `
             width: 100vw;
 
             --cardRows: 1;
-            --cardSizeOffset: 0.955;
+            --cardSizeOffset: 0.9;
         }
 
         #controls {
@@ -43,6 +43,8 @@ template.innerHTML = `
 
     <div id="controls">
         <button id="search">Search</button>
+        <vpl-label prefix="Number of rows:" id="label">
+        <input type="number" id="rowCount" value="1" min="1" max="5" slot="content"/>
     </div>
     <div id="roster"> </div>
 `;
@@ -72,6 +74,12 @@ export default class rosterPage extends HTMLElement {
             urlHelper.setParams({
                 page: "search",
             });
+        });
+
+        // TODO: get the available screen size and use that to calculate how big the cards should be.
+        this.rowCountElem = this.shadowRoot.getElementById("rowCount");
+        this.rowCountElem.addEventListener("change", event => {
+            this.style.setProperty("--cardRows", this.rowCountElem.value);
         });
     }
 

@@ -91,6 +91,10 @@ template.innerHTML = `
             --pipSize: 2vw;
             --bevelOffset: 2.5vw;
         }
+        
+        vpl-add-remove-units {
+            z-index: 1;
+        }
     </style>
     <div id="controls">
         <vpl-label prefix="Mech Name:" id="label">
