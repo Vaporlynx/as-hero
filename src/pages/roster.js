@@ -81,6 +81,7 @@ export default class rosterPage extends HTMLElement {
         this.columnCountElem.addEventListener("change", event => {
             this.style.setProperty("--cardRows", this.columnCountElem.value);
         });
+        window.onbeforeunload = () => "Are you sure you want to clear this page?";
     }
 
     connectedCallback() {
