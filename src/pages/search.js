@@ -89,6 +89,7 @@ template.innerHTML = `
 
         unit-card {
             --pipSize: 2vw;
+            --bevelOffset: 2.5vw;
         }
     </style>
     <div id="controls">

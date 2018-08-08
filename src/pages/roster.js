@@ -37,6 +37,7 @@ template.innerHTML = `
             position: relative;
             font-size: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
             --pipSize: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
+            --bevelOffset: calc(2.5vw / var(--cardRows) * var(--cardSizeOffset));
         }
     </style>
 
@@ -106,7 +107,7 @@ export default class rosterPage extends HTMLElement {
             catch (err) {
                 globals.handleError(`Error getting unit: ${err}`);
             }
-        } 
+        }
     }
 }
 

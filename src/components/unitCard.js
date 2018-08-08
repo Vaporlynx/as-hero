@@ -25,87 +25,11 @@ template.innerHTML = `
             flex-direction: column;
         }
 
-        // Bevel garbage
-        .bevel.all {
-            background: var(--bevelBgColor);
-            background:
-                -moz-linear-gradient(45deg,  transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(135deg, transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(315deg, transparent 10px, var(--bevelBgColor) 10px);
-            background:
-                -o-linear-gradient(45deg,  transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(135deg, transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(315deg, transparent 10px, var(--bevelBgColor) 10px);
-            background:
-                -webkit-linear-gradient(45deg,  transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(135deg, transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(315deg, transparent 10px, var(--bevelBgColor) 10px);
-        }
-        .bevel.tlbr {
-            background: var(--bevelBgColor);
-            background:
-                -moz-linear-gradient(45deg,  var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(135deg, transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(225deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(315deg, transparent 10px, var(--bevelBgColor) 10px);
-            background:
-                -o-linear-gradient(45deg,  var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(135deg, transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(225deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(315deg, transparent 10px, var(--bevelBgColor) 10px);
-            background:
-                -webkit-linear-gradient(45deg,  var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(135deg, transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(225deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(315deg, transparent 10px, var(--bevelBgColor) 10px);
-        }
-        .bevel.trbl {
-            background: var(--bevelBgColor);
-            background:
-                -moz-linear-gradient(45deg,  transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(135deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(315deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px);
-            background:
-                -o-linear-gradient(45deg,  transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(135deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(315deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px);
-            background:
-                -webkit-linear-gradient(45deg,  transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(135deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(315deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px);
-        }
-        .bevel.tr {
-            background: var(--bevelBgColor);
-            background:
-                -moz-linear-gradient(45deg,  var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(135deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -moz-linear-gradient(315deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px);
-            background:
-                -o-linear-gradient(45deg,  var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(135deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -o-linear-gradient(315deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px);
-            background:
-                -webkit-linear-gradient(45deg,  var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(135deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(225deg, transparent 10px, var(--bevelBgColor) 10px),
-                -webkit-linear-gradient(315deg, var(--bevelBgColor) 10px, var(--bevelBgColor) 10px);
-        }
-        .bevel.all, .bevel.trbl, .bevel.tlbr, .bevel.tr {
-            background-position: bottom left, bottom right, top right, top left;
-            -moz-background-size: 50% 50%;
-            -webkit-background-size: 50% 50%;
-            background-size: 50% 50%;
-            background-repeat: no-repeat;
-            margin-bottom: 15px;
-            padding: 15px;
+        .bevel {
+            background-color: var(--nonInteractiveElement2BackgroundColor);
+            clip-path: polygon(0 0, calc(100% - var(--bevelOffset)) 0, 100% var(--bevelOffset), 100% 100%, var(--bevelOffset) 100%, 0 calc(100% - var(--bevelOffset)));
+            padding: calc(var(--bevelOffset) / 2);
+            margin-bottom: 10px;
         }
 
         #header {
@@ -183,15 +107,15 @@ template.innerHTML = `
     </style>
     <div id="cardBody" class="spacedColumn">
         <div id="header" class="spacedRow">
-            <div id="name" class="spacedColumn bevel trbl">
+            <div id="name" class="spacedColumn bevel">
             </div>
-            <vpl-label prefix="PV:" id="pvContainer" class="bevel trbl">
+            <vpl-label prefix="PV:" id="pvContainer" class="bevel">
                 <div id="pv" slot="content"></div>
             </vpl-label>
         </div>
         <div id="upperDetails" class="spacedRow">
             <div class="spacedColumn" id="mainDetails">
-                <div id="attributes" class="spacedRow bevel trbl">
+                <div id="attributes" class="spacedRow bevel">
                     <vpl-label prefix="TP:">
                         <div id="type" slot="content">
                         </div>
@@ -217,7 +141,7 @@ template.innerHTML = `
                         </div>
                     </vpl-label>
                 </div>
-                <div id="damage" class="spacedRow bevel trbl">
+                <div id="damage" class="spacedRow bevel">
                     <vpl-label prefix="S(+0)">
                         <div id="short" slot="content"></div>
                     </vpl-label>
@@ -228,7 +152,7 @@ template.innerHTML = `
                         <div id="long" slot="content"></div>
                     </vpl-label>
                 </div>
-                <div id="heat" class="spacedRow bevel trbl">
+                <div id="heat" class="spacedRow bevel">
                     <vpl-label prefix="OV:">
                         <div id="overheat" slot="content"></div>
                     </vpl-label>
@@ -241,7 +165,7 @@ template.innerHTML = `
         </div>
         <div id="lowerDetails" class="spacedRow">
             <div id="structureSpecials" class="spacedColumn">
-                <div id="health" class="spacedColumn bevel trbl">
+                <div id="health" class="spacedColumn bevel">
                     <vpl-label prefix="A">
                         <vpl-pips id="armor" slot="content" mode="subtractive"></vpl-pips>
                     </vpl-label>
@@ -249,9 +173,9 @@ template.innerHTML = `
                         <vpl-pips id="structure" slot="content" mode="subtractive"></vpl-pips>
                     </vpl-label>    
                 </div>
-                <div id="special" class="bevel trbl"></div>
+                <div id="special" class="bevel"></div>
             </div>
-            <vpl-label prefix="CRITICAL HITS"  id="criticalsContainer" class=" bevel trbl">
+            <vpl-label prefix="CRITICAL HITS"  id="criticalsContainer" class=" bevel">
                 <div id="criticals" slot="content"></div>
             </vpl-label>
         </div>
