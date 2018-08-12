@@ -11,8 +11,8 @@ template.innerHTML = `
         }
         
         #cardBody {
-            height: inherit;
-            width: inherit;
+            height: 100%;
+            width: 100%;
         }
     
         .spacedRow {
