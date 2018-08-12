@@ -199,7 +199,7 @@ const searchUnits = url => {
           valid = false;
         }
         if (valid) {
-          results.push(unit);
+          results.push(Object.assign(unit, {totalArmor: unit.armor, totalStructure: unit.structure}));
         }
       }
     }

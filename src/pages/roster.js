@@ -64,11 +64,18 @@ export default class rosterPage extends HTMLElement {
         this.attachShadow({mode: "open"}).appendChild(this.constructor.template.content.cloneNode(true));
 
         this.rosterElem = this.shadowRoot.getElementById("roster");
-        this.handleUrlUpdated = event => {
-            this.buildRoster(this.pullUnits());
-        };
-        this.buildRoster(this.pullUnits());
 
+        this._units = [];
+
+        this.handleUrlUpdated = event => {
+            const units = this.pullUnits();
+            const encodedUnits = units.map(unit => unitHelper.encode(unit));
+            if (this.units.length !== units.length || !this.units.map(unit => unitHelper.encode(unit)).every((unit, index) => unit === encodedUnits[index])) {
+                this.units = units;
+                this.buildRoster(units);
+            }
+        };
+        this.buildRoster(this.units = this.pullUnits());
 
         this.searchElem = this.shadowRoot.getElementById("search");
         this.searchElem.addEventListener("pointerdown", event => {
@@ -82,7 +89,6 @@ export default class rosterPage extends HTMLElement {
         this.columnCountElem.addEventListener("change", event => {
             this.style.setProperty("--cardRows", this.columnCountElem.value);
         });
-        window.onbeforeunload = () => "Are you sure you want to clear this page?";
     }
 
     connectedCallback() {
@@ -93,9 +99,20 @@ export default class rosterPage extends HTMLElement {
         window.removeEventListener("urlUpdated", this.handleUrlUpdated);
     }
 
+    get units() {
+        return this._units;
+    }
+    set units(val) {
+        this._units = val;
+    }
+
     pullUnits() {
         const params = urlHelper.getParams();
         return params.units ? params.units.split(",").map(i => unitHelper.decode(i)) : [];
+    }
+
+    pushUnits(units) {
+        urlHelper.setParams({units: units.map(i => unitHelper.encode(i)).join(",")});
     }
 
     async buildRoster(units) {
@@ -105,12 +122,16 @@ export default class rosterPage extends HTMLElement {
         if (units.length) {
             try {
                 const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(",")}`);
-                const data = JSON.parse(await unParsed.text());
-                for (const unit of data) {
+                const unitDefs = JSON.parse(await unParsed.text());
+                unitDefs.forEach((def, index) => {
                     const card = document.createElement("unit-card");
-                    card.data = Object.assign(unit, units.find(i => i.id === unit.id));
+                    card.data = Object.assign(def, units.find(i => i.id === def.id));
+                    card.addEventListener("dataUpdated", event => {
+                        this.units[index] = event.detail.data;
+                        this.pushUnits(this.units);
+                    });
                     this.rosterElem.appendChild(card);
-                }
+                });
             }
             catch (err) {
                 globals.handleError(`Error getting unit: ${err}`);
