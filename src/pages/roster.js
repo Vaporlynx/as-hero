@@ -1,4 +1,5 @@
 import * as urlHelper from "../../src/urlHelper.js";
+import * as unitHelper from "../../src/unitHelper.js";
 
 const template = document.createElement("template");
 template.innerHTML = `
@@ -64,9 +65,9 @@ export default class rosterPage extends HTMLElement {
 
         this.rosterElem = this.shadowRoot.getElementById("roster");
         this.handleUrlUpdated = event => {
-            this.buildRoster(this.getIdsFromUrl());
+            this.buildRoster(this.pullUnits());
         };
-        this.buildRoster(this.getIdsFromUrl());
+        this.buildRoster(this.pullUnits());
 
 
         this.searchElem = this.shadowRoot.getElementById("search");
@@ -92,24 +93,22 @@ export default class rosterPage extends HTMLElement {
         window.removeEventListener("urlUpdated", this.handleUrlUpdated);
     }
 
-    getIdsFromUrl() {
-        if (urlHelper.getParams().unitIds) {
-            return urlHelper.getParams(["unitIds"]).unitIds.split(",").map(id => parseInt(id));
-        }
-        return [];
+    pullUnits() {
+        const params = urlHelper.getParams();
+        return params.units ? params.units.split(",").map(i => unitHelper.decode(i)) : [];
     }
 
-    async buildRoster(ids) {
+    async buildRoster(units) {
         while (this.rosterElem.hasChildNodes()) {
             this.rosterElem.removeChild(this.rosterElem.lastChild);
         }
-        if (ids.length) {
+        if (units.length) {
             try {
-                const unParsed = await window.fetch(`/sw-units?unitIds=${ids.join(",")}`);
+                const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(",")}`);
                 const data = JSON.parse(await unParsed.text());
                 for (const unit of data) {
                     const card = document.createElement("unit-card");
-                    card.data = unit;
+                    card.data = Object.assign(unit, units.find(i => i.id === unit.id));
                     this.rosterElem.appendChild(card);
                 }
             }
