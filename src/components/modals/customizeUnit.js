@@ -1,21 +1,22 @@
 const template = document.createElement("template");
 template.innerHTML = `
     <style>
-        :host {
-            display: flex;
+        #body {
             width: 200px;
+            height: 150px;
+            background-color: red;
         }
     </style>
-    <div id="pipsContainer"></div>
+    <div id="body"></div>
 `;
 
-export default class pips extends HTMLElement {
+export default class CustomizeUnit extends HTMLElement {
     static get template() {
       return template;
     }
 
     static get observedAttributes() {
-        return ["total-pips", "mode", "marked"];
+        return [];
     }
 
     constructor() {
@@ -23,8 +24,8 @@ export default class pips extends HTMLElement {
 
         this.attachShadow({mode: "open"}).appendChild(this.constructor.template.content.cloneNode(true));
 
-        this.pipsContainerElem = this.shadowRoot.getElementById("pipsContainer");
+        this.bodyElem = this.shadowRoot.getElementById("body");
     }
 }
 
-customElements.define("vpl-add-unit-modal", pips);
+customElements.define("vpl-customize-unit", CustomizeUnit);
