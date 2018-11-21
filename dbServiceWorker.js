@@ -10,6 +10,10 @@ const validSearchParams = [
   "minPV",
   "maxPV",
   "unitIds",
+  "minProductionDate",
+  "maxProductionDate",
+  "techLevels",
+  "sizes",
 ];
 
 const handleError = err => {
