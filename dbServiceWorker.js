@@ -10,8 +10,8 @@ const validSearchParams = [
   "minPV",
   "maxPV",
   "unitIds",
-  "minProductionDate",
-  "maxProductionDate",
+  "minPD",
+  "maxPD",
   "techLevels",
   "sizes",
 ];
@@ -93,6 +93,7 @@ unitDBConnection.onupgradeneeded = event => {
           special: datum.spc,
           class: datum.cl,
           variant: datum.vnt,
+          totalOverheat: datum.ov,
           metadata: {
             techLevel: datum.meta.tl,
             productionDate: datum.meta.pd,
@@ -175,7 +176,7 @@ const serveOrFetch = request => {
 };
 
 const searchUnits = url => {
-  const searchParams = {ids: []};
+  const searchParams = {};
   for (const key of validSearchParams) {
     const value = url.searchParams.get(key.toLowerCase());
     if (value) {
@@ -195,7 +196,7 @@ const searchUnits = url => {
       for (const unit of units) {
         unitsSearched++;
         let valid = true;
-        if (valid && searchParams.unitIds.length && !searchParams.unitIds.includes(unit.id)) {
+        if (valid && searchParams.unitIds && searchParams.unitIds.length && !searchParams.unitIds.includes(unit.id)) {
           valid = false;
         }
         if (valid && searchParams.unitName && !unit.name.toLowerCase().includes(searchParams.unitName.toLowerCase())) {
@@ -207,16 +208,16 @@ const searchUnits = url => {
         if (valid && searchParams.maxPV && unit.pv > parseInt(searchParams.maxPV)) {
           valid = false;
         }
-        if (valid && searchParams.minProductionDate && unit.metadata.productionDate < parseInt(searchParams.minPD)) {
+        if (valid && searchParams.minPD && unit.metadata.productionDate < parseInt(searchParams.minPD)) {
           valid = false;
         }
-        if (valid && searchParams.maxProductionDate && unit.metadata.productionDate > parseInt(searchParams.maxPD)) {
+        if (valid && searchParams.maxPD && unit.metadata.productionDate > parseInt(searchParams.maxPD)) {
           valid = false;
         }
-        if (valid && searchParams.techLevels.length && !searchParams.techLevels.includes(unit.metadata.techLevel)) {
+        if (valid && searchParams.techLevels && searchParams.techLevels.length && !searchParams.techLevels.includes(unit.metadata.techLevel)) {
           valid = false;
         }
-        if (valid && searchParams.sizes.length && !searchParams.sizes.includes(unit.size)) {
+        if (valid && searchParams.sizes && searchParams.sizes.length && !searchParams.sizes.includes(unit.size)) {
           valid = false;
         }
         if (valid) {
@@ -224,10 +225,10 @@ const searchUnits = url => {
         }
       }
     }
-    if (searchParams.ids.length) {
+    if (searchParams.unitIds && searchParams.unitIds.length) {
       const resultsCopy = results;
       results = [];
-      searchParams.ids.map(id => {
+      searchParams.unitIds.map(id => {
         results.push(resultsCopy.find(i => i.id === id));
       });
     }
