@@ -114,11 +114,11 @@ export default class rosterPage extends HTMLElement {
 
     pullUnits() {
         const params = urlHelper.getParams();
-        return params.units ? params.units.split(",").map(i => unitHelper.decode(i)) : [];
+        return params.units ? params.units.split(":").map(i => unitHelper.decode(i)) : [];
     }
 
     pushUnits(units) {
-        urlHelper.setParams({units: units.map(i => unitHelper.encode(i)).join(",")});
+        urlHelper.setParams({units: units.map(i => unitHelper.encode(i)).join(":")});
     }
 
     async buildRoster(units) {
@@ -128,7 +128,7 @@ export default class rosterPage extends HTMLElement {
         let pvTotal = 0;
         if (units.length) {
             try {
-                const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(",")}`);
+                const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(":")}`);
                 const unitDefs = JSON.parse(await unParsed.text());
                 units.forEach((unit, index) => {
                     const def = unitDefs.find(def => def.id === unit.id);

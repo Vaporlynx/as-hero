@@ -2,7 +2,7 @@ const params = {};
 
 const pull = () => {
     if (window.location.hash) {
-        const hash = window.location.hash.substr(1);
+        const hash = decodeURI(window.location.hash.substr(1));
         for (const param of hash.split("&")) {
             const split = param.split("=");
             params[split[0]] = split[1];
@@ -16,7 +16,7 @@ const push = (newParams = params) => {
     if (!newParams.page) {
         newParams.page = "search";
     }
-    const newHash = Object.keys(newParams).reduce((hash, key) => `${hash}${hash === "#" ? "" : "&"}${key}=${newParams[key]}`, "#");
+    const newHash = encodeURI(Object.keys(newParams).reduce((hash, key) => `${hash}${hash === "#" ? "" : "&"}${key}=${newParams[key]}`, "#"));
     history.pushState(params, "", newHash);
 };
 
@@ -50,3 +50,4 @@ export const consumeParams = keys => {
     window.dispatchEvent(new CustomEvent("urlUpdated"));
     return deletedKeys;
 };
+
