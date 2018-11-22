@@ -16,7 +16,10 @@ const push = (newParams = params) => {
     if (!newParams.page) {
         newParams.page = "search";
     }
-    const newHash = encodeURI(Object.keys(newParams).reduce((hash, key) => `${hash}${hash === "#" ? "" : "&"}${key}=${newParams[key]}`, "#"));
+    const newHash = encodeURI(Object.keys(newParams).reduce((hash, key) => {
+        const encodedValue = Array.isArray(newParams[key]) ? newParams[key].join(":") : newParams[key].toString();
+        return `${hash}${hash === "#" ? "" : "&"}${key}=${encodedValue}`;
+    }, "#"));
     history.pushState(params, "", newHash);
 };
 

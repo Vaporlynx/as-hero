@@ -282,7 +282,7 @@ export default class searchPage extends HTMLElement {
             this.searchUnit(this.unitNameElem.value = urlHelper.consumeParams(["unitName"]).unitName);
         }
 
-        const units = params.units ? params.units.split(":").map(i => unitHelper.decode(i)) : [];
+        const units = params.units ? params.units.map(i => unitHelper.decode(i)) : [];
         if (units.length) {
             this.sumPointValue(units);
         }
@@ -368,13 +368,13 @@ export default class searchPage extends HTMLElement {
 
     addUnit(unit) {
         const params = urlHelper.getParams();
-        const units = params.units ? params.units.split(":").map(i => unitHelper.decode(i)) : [];
+        const units = params.units ? params.units.map(i => unitHelper.decode(i)) : [];
         const modal = document.createElement("vpl-customize-unit");
         modal.pv = unit.pv;
         globals.addModal(modal);
         modal.addEventListener("submit", event => {
             units.push(Object.assign({}, unit, event.detail));
-            urlHelper.setParams({units: units.map(i => unitHelper.encode(i)).join(":")});
+            urlHelper.setParams({units: units.map(i => unitHelper.encode(i))});
             globals.removeModal(modal);
             this.sumPointValue(units);
         });
@@ -382,12 +382,12 @@ export default class searchPage extends HTMLElement {
 
     removeUnit(id) {
         const params = urlHelper.getParams();
-        const units = params.units ? params.units.split(":").map(i => unitHelper.decode(i)) : [];
+        const units = params.units ? params.units.map(i => unitHelper.decode(i)) : [];
         const firstIndex = units.findIndex(i => i.id === id);
         if (firstIndex !== -1) {
             units.splice(firstIndex, 1);
         }
-        urlHelper.setParams({units: units.map(i => unitHelper.encode(i)).join(":")});
+        urlHelper.setParams({units: units.map(i => unitHelper.encode(i))});
         this.sumPointValue(units);
     }
 
@@ -395,7 +395,7 @@ export default class searchPage extends HTMLElement {
         let pvTotal = 0;
         if (units.length) {
             try {
-                const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(":")}`);
+                const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(",")}`);
                 const unitDefs = JSON.parse(await unParsed.text());
                 units.forEach((unit, index) => {
                     const def = unitDefs.find(def => def.id === unit.id);
