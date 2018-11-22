@@ -1,3 +1,6 @@
+// TODO: pay very close attention to the '*', using this to denote the end of an array may be unsafe
+// Maybe just encodeURI(JSON.stringify(params)) would be safer and easier
+
 const params = {};
 
 const pull = () => {
@@ -5,7 +8,12 @@ const pull = () => {
         const hash = decodeURI(window.location.hash.substr(1));
         for (const param of hash.split("&")) {
             const split = param.split("=");
-            params[split[0]] = split[1];
+            const key = split[0];
+            let value = split[1];
+            if (value.includes("*")) {
+                value = value.replace("*", "").split(":");
+            }
+            params[key] = value;
         }
     }
     return params;
@@ -17,7 +25,7 @@ const push = (newParams = params) => {
         newParams.page = "search";
     }
     const newHash = encodeURI(Object.keys(newParams).reduce((hash, key) => {
-        const encodedValue = Array.isArray(newParams[key]) ? newParams[key].join(":") : newParams[key].toString();
+        const encodedValue = Array.isArray(newParams[key]) ? `${newParams[key].join(":")}*` : newParams[key].toString();
         return `${hash}${hash === "#" ? "" : "&"}${key}=${encodedValue}`;
     }, "#"));
     history.pushState(params, "", newHash);

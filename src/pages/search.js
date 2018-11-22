@@ -334,11 +334,11 @@ export default class searchPage extends HTMLElement {
         }
     }
 
-    // TODO: need a better solution than this. 
-    // Scale the div that contains these cards so that it is the card height * number of cards 
-    // set up recycling and only have enough card elements created at any time to fill the screen 
-    // Recycle existing cards when the user scrolls so performance is better with very large 
-    // number of cards 
+    // TODO: need a better solution than this.
+    // Scale the div that contains these cards so that it is the card height * number of cards
+    // set up recycling and only have enough card elements created at any time to fill the screen
+    // Recycle existing cards when the user scrolls so performance is better with very large
+    // number of cards
     buildCards(units, requestId) {
         if (units.length && requestId === this.requestId) {
             const unit = units.splice(0, 1)[0];
