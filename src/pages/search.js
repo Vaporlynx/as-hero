@@ -133,6 +133,17 @@ template.innerHTML = `
             padding: calc(var(--indentation) / 1.25);
         }
 
+        .layeredImageContainer {
+            position: relative;
+        }
+        .layeredImageContainer :nth-child(2) {
+            position: absolute;
+            left: 25px;
+            top: 14px;
+            width: 40%;
+            z-index: 1;
+        }
+
         .hidden {
             display: none;
         }
@@ -162,10 +173,10 @@ template.innerHTML = `
                         <input type="number" id="maxPV" value="100" min="0" max="100" slot="content"/>
                     </vpl-label>
                     <vpl-label prefix="Minimum Production Date">
-                        <input type="number" id="minPD" value="2800" min="2000" max="3300" slot="content"/>
+                        <input type="number" id="minPD" value="2400" min="2000" max="3300" slot="content"/>
                     </vpl-label>
                     <vpl-label prefix="Maximum Production Date">
-                        <input type="number" id="maxPD" value="3050" min="2000" max="3300" slot="content"/>
+                        <input type="number" id="maxPD" value="3150" min="2000" max="3300" slot="content"/>
                     </vpl-label>
                 </div>
                 <vpl-label prefix="Sizes: ">
@@ -201,7 +212,16 @@ template.innerHTML = `
                     </div>
                 </vpl-label>
             </div>
-            <button id="advancedToggle" for="expandToggle">Advanced</button>
+            <div id="advancedButtonsContainer" class="spacedColumn">
+                <button id="advancedToggle" class="layeredImageContainer">
+                    <img src="/assets/magnifyingGlass.svg">
+                    <img src="/assets/plus.svg">
+                </button>
+                <button id="clearAdvanced" class="hidden layeredImageContainer">
+                    <img src="/assets/magnifyingGlass.svg">
+                    <img src="/assets/not.svg">
+                </button>
+            </div>
         </div>
     </div>
     <div id="mechContainer"> </div>
@@ -270,6 +290,26 @@ export default class searchPage extends HTMLElement {
         this.advancedToggleElem = this.shadowRoot.getElementById("advancedToggle");
         this.advancedToggleElem.addEventListener("pointerdown", event => {
             this.expandableControlsElem.classList.toggle("hidden");
+            this.clearAdvancedElem.classList.toggle("hidden");
+        });
+
+        this.clearAdvancedElem = this.shadowRoot.getElementById("clearAdvanced");
+        this.clearAdvancedElem.addEventListener("pointerdown", event => {
+            for (const elem of [this.minPVElem, this.maxPVElem, this.minPDElem, this.maxPDElem]) {
+                elem.value = elem.defaultValue;
+            }
+            for (const elem of [
+                    this.sizeLightElem,
+                    this.sizeMediumElem,
+                    this.sizeHeavyElem,
+                    this.sizeAssaultElem,
+                    this.techLevelInnerSphereElem,
+                    this.techLevelClanElem,
+                    this.techLevelMixedElem,
+                    this.techLevelPrimitiveElem,
+                ]) {
+                elem.checked = true;
+            }
         });
     }
 
@@ -298,30 +338,26 @@ export default class searchPage extends HTMLElement {
             const params = {
                 unitName,
             };
-            if (this.expandableControlsElem.classList.contains("hidden")) {
-                urlHelper.consumeParams(advancedParams);
-            }
-            else {
-                for (const key of advancedParams) {
-                    switch (key) {
-                        case "techLevels":
-                            params[key] = techLevelParams.reduce((values, key) => {
-                                if (this[`techLevel${key.name}Elem`].checked) {
-                                    values.push(key.id);
-                                }
-                                return values;
-                            }, []).join(",");
-                        break;
-                        case "sizes":
-                            params[key] = sizeParams.reduce((values, key) => {
-                                if (this[`size${key.name}Elem`].checked) {
-                                    values.push(key.id);
-                                }
-                                return values;
-                            }, []).join(",");
-                        break;
-                        default: params[key] = this[`${key}Elem`].value; break;
-                    }
+
+            for (const key of advancedParams) {
+                switch (key) {
+                    case "techLevels":
+                        params[key] = techLevelParams.reduce((values, key) => {
+                            if (this[`techLevel${key.name}Elem`].checked) {
+                                values.push(key.id);
+                            }
+                            return values;
+                        }, []).join(",");
+                    break;
+                    case "sizes":
+                        params[key] = sizeParams.reduce((values, key) => {
+                            if (this[`size${key.name}Elem`].checked) {
+                                values.push(key.id);
+                            }
+                            return values;
+                        }, []).join(",");
+                    break;
+                    default: params[key] = this[`${key}Elem`].value; break;
                 }
             }
             urlHelper.setParams(params);
