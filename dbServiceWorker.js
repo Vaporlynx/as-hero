@@ -244,7 +244,7 @@ const searchUnits = url => {
         }
         if (valid && searchParams.specials && searchParams.specials.length) {
           for (const special of searchParams.specials) {
-            if (!unit.special.toLowerCase().includes(special)) {
+            if (!unit.special || !unit.special.toLowerCase().includes(special)) {
               valid = false;
               break;
             }
