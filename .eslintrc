@@ -59,6 +59,8 @@
     "globals": true,
     "require": true,
     "currentMech": true,
-    "defs": true
+    "defs": true,
+    "importScripts": true,
+    "Fuse": true
   }
 }

@@ -10,6 +10,7 @@ const advancedParams = [
     "maxPD",
     "techLevels",
     "sizes",
+    "specials",
 ];
 const sizeParams = [
     {name: "Light", id: 1},
@@ -143,6 +144,10 @@ template.innerHTML = `
             width: 40%;
             z-index: 1;
         }
+        
+        #specials: {
+            width: 100%;
+        }
 
         .hidden {
             display: none;
@@ -166,16 +171,16 @@ template.innerHTML = `
         <div id="advancedControls" class="spacedRow">
             <div id="expandableControls" class="spacedColumn hidden">
                 <div class="spacedRow">
-                    <vpl-label prefix="Minimum PV">
+                    <vpl-label prefix="Min PV">
                         <input type="number" id="minPV" value="0" min="0" max="100" slot="content"/>
                     </vpl-label>
-                    <vpl-label prefix="Maximum PV">
+                    <vpl-label prefix="Max PV">
                         <input type="number" id="maxPV" value="100" min="0" max="100" slot="content"/>
                     </vpl-label>
-                    <vpl-label prefix="Minimum Production Date">
+                    <vpl-label prefix="Min Production Date">
                         <input type="number" id="minPD" value="2400" min="2000" max="3300" slot="content"/>
                     </vpl-label>
-                    <vpl-label prefix="Maximum Production Date">
+                    <vpl-label prefix="Max Production Date">
                         <input type="number" id="maxPD" value="3150" min="2000" max="3300" slot="content"/>
                     </vpl-label>
                 </div>
@@ -210,6 +215,9 @@ template.innerHTML = `
                             <input type="checkbox" id="techLevelPrimitive" checked="true" slot="content"/>
                         </vpl-label>
                     </div>
+                </vpl-label>
+                <vpl-label prefix="Specials:">
+                    <input type="text" id="specials" slot="content"></input>
                 </vpl-label>
             </div>
             <div id="advancedButtonsContainer" class="spacedColumn">
@@ -286,6 +294,7 @@ export default class searchPage extends HTMLElement {
         this.techLevelClanElem = this.shadowRoot.getElementById("techLevelClan");
         this.techLevelMixedElem = this.shadowRoot.getElementById("techLevelMixed");
         this.techLevelPrimitiveElem = this.shadowRoot.getElementById("techLevelPrimitive");
+        this.specialsElem = this.shadowRoot.getElementById("specials");
 
         this.advancedToggleElem = this.shadowRoot.getElementById("advancedToggle");
         this.advancedToggleElem.addEventListener("pointerdown", event => {
@@ -356,6 +365,9 @@ export default class searchPage extends HTMLElement {
                             }
                             return values;
                         }, []).join(",");
+                    break;
+                    case "specials":
+                        params[key] = this.specialsElem.value.split(",").map(i => i.trim()).join(",");
                     break;
                     default: params[key] = this[`${key}Elem`].value; break;
                 }
