@@ -23,6 +23,10 @@ template.innerHTML = `
             height: 100%;
             width: 100%;
         }
+
+        vpl-label {
+            align-items: center;
+        }
     
         .spacedRow {
             display: flex;
@@ -49,6 +53,11 @@ template.innerHTML = `
             align-items: center;
         }
 
+        #header > dev, vpl-label {
+            height: 100%;
+            box-sizing: border-box;
+        }
+
         #upperDetails {
             height: 40%;
             font-size: 130%;
@@ -71,7 +80,7 @@ template.innerHTML = `
             width: 30%;
             object-fit: contain;
             margin-left: 10px;
-            padding-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         #attributes {
@@ -124,7 +133,7 @@ template.innerHTML = `
         <div id="header" class="spacedRow">
             <div id="name" class="spacedColumn bevel">
             </div>
-            <vpl-label prefix="Note:" id="noteContainer" class="bevel hidden">
+            <vpl-label prefix="" id="noteContainer" class="bevel hidden">
                 <div id="note" slot="content"></div>
             </vpl-label>
             <vpl-label prefix="PV:" id="pvContainer" class="bevel">
