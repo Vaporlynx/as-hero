@@ -23,6 +23,9 @@ template.innerHTML = `
             height: 100%;
             width: 100%;
         }
+        #cardBody > div:not(:last-child) {
+            margin-bottom: 10px;
+        }
 
         vpl-label {
             align-items: center;
@@ -42,7 +45,6 @@ template.innerHTML = `
             background-color: var(--nonInteractiveElement2BackgroundColor);
             clip-path: polygon(0 0, calc(100% - var(--bevelOffset)) 0, 100% var(--bevelOffset), 100% 100%, var(--bevelOffset) 100%, 0 calc(100% - var(--bevelOffset)));
             padding: calc(var(--bevelOffset) / 2);
-            margin-bottom: 10px;
         }
 
         #header {
@@ -53,9 +55,10 @@ template.innerHTML = `
             align-items: center;
         }
 
-        #header > dev, vpl-label {
+        #header > * {
             height: 100%;
             box-sizing: border-box;
+            margin-right: 10px;
         }
 
         #upperDetails {
@@ -66,9 +69,12 @@ template.innerHTML = `
         #mainDetails {
             width: 70%;
         }
-        #mainDetails div {
+        #mainDetails > div {
             height: 30%;
             align-items: center;
+        }
+        #mainDetails > div:not(:last-child) {
+            margin-bottom: 10px;
         }
 
         #lowerDetails {
@@ -80,7 +86,6 @@ template.innerHTML = `
             width: 30%;
             object-fit: contain;
             margin-left: 10px;
-            margin-bottom: 10px;
         }
 
         #attributes {
@@ -113,6 +118,7 @@ template.innerHTML = `
         #special {
             height: 60%;
             word-wrap: break-word;
+            margin-top: 10px;
         }
 
         #criticalsContainer {
