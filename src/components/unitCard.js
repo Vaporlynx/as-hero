@@ -54,13 +54,13 @@ template.innerHTML = `
             font-size: 125%;
             align-items: center;
         }
-
         #header > * {
             height: 100%;
             box-sizing: border-box;
+        }
+        #header > *:not(:last-child) {
             margin-right: 10px;
         }
-
         #upperDetails {
             height: 40%;
             font-size: 130%;
