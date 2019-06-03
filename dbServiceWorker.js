@@ -1,20 +1,4 @@
-importScripts("/src/lib/fuse.min.js");
-let fuse = null;
-const fuseOptions = {
-  shouldSort: true,
-  threshold: 0.6,
-  includeScore: true,
-  location: 0,
-  distance: 100,
-  maxPatternLength: 32,
-  minMatchCharLength: 2,
-  keys: [
-    "name",
-  ],
-};
-
 let unitDB = null;
-let imageDB = null;
 let loading = false;
 // TODO there doesn't seem to be any DS DA or MS in the MUL?
 const unitTypes = ["BM", "IM", "PM", "CV", "SV", "AF", "CF", "DS", "DA", "SC", "MS", "CI", "BA"];
@@ -83,16 +67,13 @@ const setUnit = (type,  data) => {
   });
 };
 
-// TODO: create a proper schema, instead of using sqlite as a keystore
 unitDBConnection.onupgradeneeded = event => {
   loading = true;
   for (const unitType of unitTypes) {
     event.target.result.createObjectStore(unitType, {keyPath: "name"});
   }
   for (const type of unitTypes) {
-      handleError(`Fetching bundled def for type ${type}`);
     fetch(`/defs/${type}-def.json`).then(request => request.text()).then(unParsed => JSON.parse(unParsed)).then(async data => {
-      handleError(`Got bundled def for type ${type}`);
       for (const key of Object.keys(data)) {
         const datum = data[key];
         const unit = {
@@ -129,72 +110,6 @@ unitDBConnection.onupgradeneeded = event => {
       handleError(`Failed to get bundled def for type ${type}`);
     });
   }
-};
-
-const imageDBConnection = indexedDB.open("imageDB", 1);
-imageDBConnection.onerror = event => {
-  handleError("error opening imageDB");
-};
-
-imageDBConnection.onupgradeneeded = event => {
-  event.target.result.createObjectStore("images", {keyPath: "url"});
-};
-
-const getImage = url => {
-  return new Promise((resolve, reject) => {
-    if (imageDB) {
-      try {
-        const request = imageDB.transaction("images").objectStore("images").get(url);
-        request.onsuccess = event => {
-          resolve(request.result);
-        };
-      }
-      catch (err) {
-        reject(`Failed to fetch image for url: ${url}`);
-      }
-    }
-    else {
-      reject("Image database not initialized!");
-    }
-  });
-};
-
-const setImage = (url,  data) => {
-  return new Promise((resolve, reject) => {
-    if (imageDB) {
-      try {
-        const request = imageDB.transaction("image", "readwrite").objectStore("image").put({url, data});
-        request.onsuccess = event => {
-          resolve();
-        };
-      }
-      catch (err) {
-        reject(`setImage failed for url: ${url}`);
-      }
-    }
-    else {
-      reject("Image database not initialized!");
-    }
-  });
-};
-
-const serveOrFetch = request => {
-  const url = new URL(request.url);
-  fetch(url).then(response => response.blob()).then(blob => URL.createObjectURL(blob)).then(data => {
-    handleError("data?");
-  });
-  return new Promise(async (resolve, reject) => {
-    const cachedData = await caches.match(request);
-    if (cachedData) {
-      resolve(cachedData);
-    }
-    else {
-      const response = await fetch(request);
-      const cache = await caches.open("urlCache");
-      cache.put(request, response.clone());
-      resolve(response);
-    }
-  });
 };
 
 const searchUnits = url => {
@@ -318,17 +233,6 @@ const searchUnits = url => {
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
-  // build fuse stuff
-  const units = [];
-  for (const type of unitTypes) {
-    const unitsByType = await getUnits(type);
-    units.push(...unitsByType);
-  }
-  fuse = new Fuse(units, fuseOptions);
-};
-
-imageDBConnection.onsuccess = async event => {
-  imageDB = event.target.result;
 };
 
 self.addEventListener("fetch", event => {
@@ -336,17 +240,7 @@ self.addEventListener("fetch", event => {
   if (url.pathname === "/sw-units") {
     event.respondWith(searchUnits(url));
   }
-  // TODO: finish the image cache.  The images are stored on an s3 bucket, with no CORS. so its non-trivial to fetch them
-  // Find a hack to pull the images (dump them in canvas, pull out the data, or do the work on the main thread without fetch and save it back to this worker)
-  // If that doesnt work, scrap it.
-  else if (url.pathname === "/sw-images") {
-    event.respondWith(getImage(url));
-  }
   else if (url.pathname === "/sw-load-status") {
     event.respondWith(new Response(`${!loading ? 1 : loadedTypes.length / unitTypes.length}`));
-  }
-  // Cache app assets
-  else if (["vaporlynx.github.io", "127.0.0.1"].includes(url.hostName)){
-    event.respondWith(serveOrFetch(event.request));
   }
 });
