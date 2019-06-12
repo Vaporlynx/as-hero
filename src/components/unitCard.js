@@ -13,6 +13,7 @@ template.innerHTML = `
             border: .1em solid;
             border-color: var(--nonInteractiveElementBackgroundColor);
             box-sizing: border-box;
+            --fullPad: 0.2em;
         }
 
         .hidden {
@@ -24,7 +25,7 @@ template.innerHTML = `
             width: 100%;
         }
         #cardBody > div:not(:last-child) {
-            margin-bottom: 10px;
+            margin-bottom: var(--fullPad);
         }
 
         vpl-label {
@@ -59,7 +60,7 @@ template.innerHTML = `
             box-sizing: border-box;
         }
         #header > *:not(:last-child) {
-            margin-right: 10px;
+            margin-right: var(--fullPad);
         }
         #upperDetails {
             height: 40%;
@@ -74,7 +75,7 @@ template.innerHTML = `
             align-items: center;
         }
         #mainDetails > div:not(:last-child) {
-            margin-bottom: 10px;
+            margin-bottom: var(--fullPad);
         }
 
         #lowerDetails {
@@ -85,7 +86,7 @@ template.innerHTML = `
         #image {
             width: 30%;
             object-fit: contain;
-            margin-left: 10px;
+            margin-left: var(--fullPad);
         }
 
         #attributes {
@@ -118,14 +119,14 @@ template.innerHTML = `
         #special {
             height: 60%;
             word-wrap: break-word;
-            margin-top: 10px;
+            margin-top: var(--fullPad);
         }
 
         #criticalsContainer {
             width: 40%;
             display: flex;
             flex-direction: column;
-            margin-left: 10px;
+            margin-left: var(--fullPad);
             align-items: center;
         }
 
