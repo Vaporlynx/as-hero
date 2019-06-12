@@ -121,7 +121,7 @@ const searchUnits = url => {
         searchParams[key] = value.split(",").map(i => parseInt(i));
       }
       else if (key === "specials") {
-        searchParams[key] = value.split(",");
+        searchParams[key] = value.toLowerCase().split(",");
       }
       else {
         searchParams[key] = value;
@@ -132,8 +132,6 @@ const searchUnits = url => {
     let unitsSearched = 0;
     let results = [];
 
-    // TODO: this should probably be pulled out into a separate function that suggests names as you type
-    // const matchedNames = searchParams.unitName && searchParams.unitName.length ? fuse.search(searchParams.unitName) : [];
     for (const type of searchParams.types || unitTypes) {
       const units = await getUnits(type);
       for (const unit of units) {
