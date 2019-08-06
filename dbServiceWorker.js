@@ -235,7 +235,7 @@ unitDBConnection.onsuccess = async event => {
   unitDB = event.target.result;
 };
 
-self.addEventListener("fetch", event => {
+self.addEventListener("fetch", event => { 
   const url = new URL(event.request.url.toLowerCase());
   if (url.pathname === "/sw-units") {
     event.respondWith(searchUnits(url));

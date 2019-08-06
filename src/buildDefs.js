@@ -19,7 +19,6 @@ const getUnits = async () => {
             }, 60000);
             const workingString = `${searchString}`;
             try {
-                 // TODO: look into bug with the request library, it looks like its hitting a timeout then vomiting everywhere
                 const unParsed = await request(`http://masterunitlist.info/Unit/QuickList?name=${workingString}`);
                 completed = true;
                 const parsed = JSON.parse(unParsed);
@@ -61,6 +60,7 @@ const getUnits = async () => {
                     if (totalFound > 99) {
                         for (const letter of letters) {
                             totalFound += await searchByString(`${searchString}${letter}`);
+                            totalFound += await searchByString(`${letter}${searchString}`);
                         }
                     }
                     resolve(totalFound);
