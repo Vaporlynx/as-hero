@@ -138,7 +138,7 @@ const searchUnits = url => {
       const units = await getUnits(type);
       for (const unit of units) {
         unitsSearched++;
-        // TODO: these if statements are very similar.  Look at programatic way to organize them, maintain maintainability 
+        // TODO: these if statements are very similar.  Look at programatic way to organize them, maintain maintainability
         let valid = true;
         const parsedMove = unit.movement.replace(/[\\"a-z]/ig, "").split("/").map(i => parseInt(i));
         const parsedDamage = [unit.damage.short, unit.damage.medium, unit.damage.long];
@@ -230,46 +230,44 @@ const searchUnits = url => {
   });
 };
 
-const fetchAsset = request => {
-  return new Promise(async (resolve, reject) => {
-    let resolved = false;
+const fetchAsset = request => new Promise(async (resolve, reject) => {
+  let resolved = false;
 
-    const cachePromise = caches.match(request).then(cachedData => {
-      if (!resolved) {
-        resolved = true;
-        resolve(cachedData);
-      }
-    }).catch(err => {
-      // swallow error
-    }); 
-
-    fetch(request).then(response => {
-      if (!resolved) {
-        resolved = true;
-        resolve(response);
-        caches.open("urlCache").then(cache => {
-          cache.put(request, response.clone());
-        }).catch(err => {
-          // Swallow error
-        });
-      }
-    }).catch(err => {
-      // Only reject if we errored and the cache has no match
-      cachePromise.then(cachedData => {
-        if (!cachedData) {
-          reject(err);
-        }
-      });
-    })
+  const cachePromise = caches.match(request).then(cachedData => {
+    if (!resolved) {
+      resolved = true;
+      resolve(cachedData);
+    }
+  }).catch(err => {
+    // swallow error
   });
-};
+
+  fetch(request).then(response => {
+    if (!resolved) {
+      resolved = true;
+      resolve(response);
+      caches.open("urlCache").then(cache => {
+        cache.put(request, response.clone());
+      }).catch(err => {
+        // Swallow error
+      });
+    }
+  }).catch(err => {
+    // Only reject if we errored and the cache has no match
+    cachePromise.then(cachedData => {
+      if (!cachedData) {
+        reject(err);
+      }
+    });
+  });
+});
 
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
 };
 
-self.addEventListener("fetch", event => { 
+self.addEventListener("fetch", event => {
   const url = new URL(event.request.url.toLowerCase());
   if (url.pathname === "/sw-units") {
     event.respondWith(searchUnits(url));
