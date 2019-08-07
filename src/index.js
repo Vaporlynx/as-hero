@@ -2,7 +2,7 @@ import * as urlHelper from "../src/urlHelper.js";
 
 const pageContainerElem = document.getElementById("pageContainer");
 
-navigator.serviceWorker.register("/dbServiceWorker.js").then(registration => {
+navigator.serviceWorker.register("./dbServiceWorker.js").then(registration => {
     console.log(`Service worker spawned on ${registration.scope}`);
 }).catch(err => {
     globals.handleError(err);

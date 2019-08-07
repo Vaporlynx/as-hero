@@ -34,7 +34,7 @@ template.innerHTML = `
     </style>
     <div id="loadingContainer">
         <vpl-label  id="progressIndicator" prefix="Loading 0%">
-            <img src="/assets/spinner.svg" id="spinner" slot="content"></img>
+            <img src="./assets/spinner.svg" id="spinner" slot="content"></img>
         </vpl-label>
     </div>
 `;

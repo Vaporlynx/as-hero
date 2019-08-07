@@ -73,7 +73,7 @@ unitDBConnection.onupgradeneeded = event => {
     event.target.result.createObjectStore(unitType, {keyPath: "name"});
   }
   for (const type of unitTypes) {
-    fetch(`/defs/${type}-def.json`).then(request => request.text()).then(unParsed => JSON.parse(unParsed)).then(async data => {
+    fetch(`./defs/${type}-def.json`).then(request => request.text()).then(unParsed => JSON.parse(unParsed)).then(async data => {
       for (const key of Object.keys(data)) {
         const datum = data[key];
         const unit = {
