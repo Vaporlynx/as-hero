@@ -230,37 +230,41 @@ const searchUnits = url => {
   });
 };
 
-const fetchAsset = request => new Promise(async (resolve, reject) => {
-  let resolved = false;
+const fetchAsset = request => {
+  return new Promise(async (resolve, reject) => {
+    let resolved = false;
 
-  const cachePromise = caches.match(request).then(cachedData => {
-    if (!resolved) {
-      resolved = true;
-      resolve(cachedData);
-    }
-  }).catch(err => {
-    // swallow error
-  });
-
-  fetch(request).then(response => {
-    if (!resolved) {
-      resolved = true;
-      resolve(response);
-      caches.open("urlCache").then(cache => {
-        cache.put(request, response.clone());
-      }).catch(err => {
-        // Swallow error
-      });
-    }
-  }).catch(err => {
-    // Only reject if we errored and the cache has no match
-    cachePromise.then(cachedData => {
-      if (!cachedData) {
-        reject(err);
+    const cachePromise = caches.match(request).then(cachedData => {
+      if (!resolved && cachedData) {
+        resolved = true;
+        resolve(cachedData);
       }
+    }).catch(err => {
+      // swallow error
+    });
+
+    fetch(request).then(response => {
+      if (!resolved) {
+        resolved = true;
+        resolve(response);
+        if (response.status === 200) {
+          caches.open("urlCache").then(cache => {
+            cache.put(request, response.clone());
+          }).catch(err => {
+            // Swallow error
+          });
+        }
+      }
+    }).catch(err => {
+      // Only reject if we errored and the cache has no match
+      cachePromise.then(cachedData => {
+        if (!cachedData) {
+          reject(err);
+        }
+      });
     });
   });
-});
+};
 
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
