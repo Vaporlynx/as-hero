@@ -191,7 +191,7 @@ Promise.all([getUnits(), parseMtfs()]).then(async ([unitsByType, mtfs]) => {
                         unit.wp = mtf.weapons;
                         unit.hs = mtf.heatSinks;
                         if (mtf.year !== unit.meta.pd) {
-                            console.log(`Year mismatch for ${unit.nm}, ${unit.meta.pd} vs${mtf.year}`);
+                            console.log(`Year mismatch for ${unit.nm}, ${unit.meta.pd} vs ${mtf.year}`);
                         }
                     }
                 }
