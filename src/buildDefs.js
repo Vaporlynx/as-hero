@@ -2,6 +2,172 @@ const fs = require("fs").promises;
 
 const request = require("request-promise-native");
 
+const maxQuerySize = 10;
+const requestTimeout = 60000;
+const maxRequeueTime = 60000;
+
+// TODO: pull this out into a different file.
+// TODO: finish adding the other hundreds of weapon strings present in the mtf files
+const parseWeaponString = rawString => {
+    const split = rawString.split(" ");
+    // intentional !=
+    if (split[0] != parseInt(split[0])) {
+        split.splice(0, 0, 1);
+    }
+    const clan = rawString.toLowerCase().includes("cl");
+    if (split[1].toLowerCase().indexOf("is") === 0 || split[1].toLowerCase().indexOf("cl") === 0) {
+        split[1] = split[1].slice(2);
+    }
+    const [amount, ...remainingTokens] = split;
+    const weaponString = remainingTokens.join("").toLowerCase().replace("(r)", "");
+
+
+    let weaponCode = "";
+    switch (weaponString) {
+        case "largelaser": weaponCode = "LL"; break;
+        case "mediumlaser": weaponCode = "ML"; break;
+        case "smalllaser": weaponCode = "SL"; break;
+        case "lrm5": weaponCode = "LRM5"; break;
+        case "lrm10": weaponCode = "LRM10"; break;
+        case "lrm15": weaponCode = "LRM15"; break;
+        case "lrm20": weaponCode = "LRM20"; break;
+        case "srm2": weaponCode = "SRM2"; break;
+        case "srm4": weaponCode = "SRM4"; break;
+        case "srm6": weaponCode = "SRM6"; break;
+        case "ac2":
+        case "ac/2":
+        case "autocannon/2": weaponCode = "AC2"; break;
+        case "ac5":
+        case "ac/5":
+        case "autocannon/5": weaponCode = "AC5"; break;
+        case "ac10":
+        case "ac/10":
+        case "autocannon/10": weaponCode = "AC10"; break;
+        case "ac20":
+        case "ac/20":
+        case "autocannon/20": weaponCode = "AC20"; break;
+        case "mg":
+        case "machinegun": weaponCode = "MG"; break;
+        case "particlecannon":
+        case "ppc" : weaponCode = "PPC"; break;
+        case "flamer": weaponCode = "Flamer"; break;
+        // Tech Level 2
+        case "lbxac2":
+        case "lb2-xac": weaponCode = "LBX2"; break;
+        case "lbxac5":
+        case "lb5-xac": weaponCode = "LBX5"; break;
+        case "lbxac10":
+        case "lb10-xac": weaponCode = "LBX10"; break;
+        case "lbxac20":
+        case "lb20-xac": weaponCode = "LBX20"; break;
+        case "improvednarc": weaponCode = "INARC"; break;
+        case "narcbeacon":
+        case "narc": weaponCode = "NARC"; break;
+        case "erlargelaser": weaponCode = "ERLL"; break;
+        case "ermediumlaser": weaponCode = "ERML"; break;
+        case "ersmalllaser": weaponCode = "ERSL"; break;
+        case "largepulselaser": weaponCode = "LPL"; break;
+        case "mediumpulselaser": weaponCode = "MPL"; break;
+        case "smallpulselaser": weaponCode = "SPL"; break;
+        case "ultraac2":
+        case "ultraac/2": weaponCode = "UAC2"; break;
+        case "ultraac5":
+        case "ultraac/5": weaponCode = "UAC5"; break;
+        case "ultraac10":
+        case "ultraac/10": weaponCode = "UAC10"; break;
+        case "ultraac20":
+        case "ultraac/20": weaponCode = "UAC20"; break;
+        case "erppc" : weaponCode = "ERPPC"; break;
+        case "streaksrm2":
+        case "streaksrm2(os)":
+        case "ssrm2": weaponCode = "SSRM2"; break;
+        case "streaksrm4":
+        case "streaksrm4(os)":
+        case "ssrm4": weaponCode = "SSRM4"; break;
+        case "streaksrm6":
+        case "streaksrm6(os)":
+        case "ssrm6": weaponCode = "SSRM4"; break;
+        case "antag":
+        case "tag": weaponCode = "TAG"; break;
+        case "sword": weaponCode = "Sword"; break;
+        case "gaussrifle":
+        case "gauss": weaponCode = "GR"; break;
+        // Gross Excess
+        case "lightmachinegun": weaponCode = "LMG"; break;
+        case "heavymachinegun": weaponCode = "HMG"; break;
+        case "lac/2":
+        case "lac2": weaponCode = "LAC2"; break;
+        case "lac/5":
+        case "lac5": weaponCode = "LAC5"; break;
+        case "heavyppc": weaponCode = "HPPC"; break;
+        case "lightppc": weaponCode = "LPPC"; break;
+        case "smallxpulselaser":
+        case "smallx-pulselaser": weaponCode = "SXPL"; break;
+        case "mediumxpulselaser":
+        case "mediumx-pulselaser": weaponCode = "MXPL"; break;
+        case "largexpulselaser":
+        case "largex-pulselaser": weaponCode = "LXPL"; break;
+        case "heavygaussrifle": weaponCode = "HGR"; break;
+        case "hag/20": weaponCode = "HAG20"; break;
+        case "hag/30": weaponCode = "HAG30"; break;
+        case "hag/40": weaponCode = "HAG40"; break;
+        case "snppc":
+        case "snub-noseppc": weaponCode = "SPPC"; break;
+        case "atm3": weaponCode = "ATM3"; break;
+        case "atm6": weaponCode = "ATM6"; break;
+        case "atm9": weaponCode = "ATM9"; break;
+        case "atm12": weaponCode = "ATM12"; break;
+        case "heavysmalllaser": weaponCode = "HSL"; break;
+        case "heavymediumlaser": weaponCode = "HML"; break;
+        case "heavylargelaser": weaponCode = "HLL"; break;
+        case "rocketlauncher10": weaponCode = "RL10"; break;
+        case "rocketlauncher15": weaponCode = "RL15"; break;
+        case "rocketlauncher20": weaponCode = "RL20"; break;
+        case "arrowiv":
+        case "arrowivsystem": weaponCode = "ArrowIV"; break;
+        case "plasmarifle": weaponCode = "PR"; break;
+        case "sga": weaponCode = "LGA"; break;
+        case "mga": weaponCode = "MGA"; break;
+        case "hga": weaponCode = "HGA"; break;
+        case "mml3": weaponCode = "MML3"; break;
+        case "mml5": weaponCode = "MML5"; break;
+        case "mml7": weaponCode = "MML7"; break;
+        case "mml9": weaponCode = "MML9"; break;
+        case "mrm10": weaponCode = "MRM10"; break;
+        case "mrm20": weaponCode = "MRM20"; break;
+        case "mrm30": weaponCode = "MRM30"; break;
+        case "mrm40": weaponCode = "MRM40"; break;
+        case "lightgaussrifle": weaponCode = "LGR"; break;
+        case "rotaryac/2":
+        case "rotaryac2": weaponCode = "RAC2"; break;
+        case "rotaryac/5":
+        case "rotaryac5": weaponCode = "RAC5"; break;
+        case "ermicrolaser": weaponCode = "ERuL"; break;
+        case "apgaussrifle": weaponCode = "APGR"; break;
+        case "a-pod": weaponCode = "APOD"; break;
+        case "b-pod": weaponCode = "BPOD"; break;
+        // TODO: these are NOT weapons, rename to equipment or remove
+        case "ecmsuite":
+        case "guardianecm": weaponCode = "ECM"; break;
+        case "ams":
+        case "antimissilesystem": weaponCode = "AMS"; break;
+        case "lams":
+        case "laserarm": weaponCode = "LAMS"; break;
+        case "c3slaveunit": weaponCode = "C3S"; break;
+        case "c3masterwithtag":
+        case "c3mastercomputer": weaponCode = "C3M"; break;
+        case "improvedc3cpu": weaponCode = "C3I"; break;
+        case "beagleactiveprobe": weaponCode = "BAP"; break;
+        default: {
+            weaponCode = "UNKNOWN";
+        } break;
+    }
+
+    const parsedWeapons = new Array(amount);
+
+    return parsedWeapons.fill(`${clan ? "CLAN" : "IS"}_${weaponCode}`);
+};
+
 const parseMtfs = () => new Promise(resolve => {
     const units = new Map();
     const weapons = new Set();
@@ -39,9 +205,12 @@ const parseMtfs = () => new Promise(resolve => {
                                             split.slice(index + 1, index + 1 + parseInt(value)).map(line => {
                                                 const [weapon, locationString] = line.split(", ");
                                                 if (weapon && locationString) {
-                                                    weapons.add(weapon);
+                                                    const parsedWeapons = parseWeaponString(weapon);
                                                     const location = locationString.split(" ").map(i => i[0].toLowerCase()).join("");
-                                                    unit.weapons[location] = weapon;
+                                                    for (const weapon of parsedWeapons) {
+                                                        unit.weapons[location] = weapon;
+                                                        weapons.add(weapon);
+                                                    }
                                                 }
                                             });
                                         } break;
@@ -83,11 +252,12 @@ const getUnits = () => new Promise(async(resolve, reject) => {
 
     const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
     const unitsByType = {};
+    let totalSearched = 0;
 
     const searchByString = searchString => {
         return new Promise(async (resolve, reject) => {
             if (stringsSearched.has(searchString)) {
-                resolve(0);
+                resolve([]);
                 return;
             }
             else {
@@ -98,15 +268,15 @@ const getUnits = () => new Promise(async(resolve, reject) => {
                 if (!completed) {
                     reject("TIMEOUT_REACHED");
                 }
-            }, 60000);
+            }, requestTimeout);
             const workingString = `${searchString}`;
             try {
                 const unParsed = await request(`http://masterunitlist.info/Unit/QuickList?name=${workingString}`);
                 completed = true;
                 const parsed = JSON.parse(unParsed);
-                let totalFound = parsed.Units.length;
+                const totalFound = parsed.Units.length;
+                totalSearched += totalFound;
                 if (parsed && parsed.Units) {
-                    console.log(`${workingString} returned ${parsed.Units.length} results`);
                     for (const Unit of parsed.Units) {
                         const unit = {
                             id: Unit.Id,
@@ -139,16 +309,19 @@ const getUnits = () => new Promise(async(resolve, reject) => {
                         unitsByType[unit.tp][unit.nm] = unit;
                     }
                     // Need to dig deeper!
+                    const additionalWords = [];
                     if (totalFound > 99) {
                         for (const letter of letters) {
-                            totalFound += await searchByString(`${searchString}${letter}`);
-                            totalFound += await searchByString(`${letter}${searchString}`);
+                            additionalWords.push(`${searchString}${letter}`);
+                            additionalWords.push(`${letter}${searchString}`);
+                            additionalWords.push(`${searchString} ${letter}`);
+                            additionalWords.push(`${letter} ${searchString}`);
                         }
                     }
-                    resolve(totalFound);
+                    resolve(additionalWords);
                 }
                 else {
-                    resolve(0);
+                    resolve([]);
                 }
             }
             catch (err) {
@@ -158,6 +331,10 @@ const getUnits = () => new Promise(async(resolve, reject) => {
     };
     console.log(`Searching, started at ${new Date().toString()}`);
     try {
+        let requeueWaitTime = 1;
+        const inerval = setInterval(() => {
+            console.log(`TotalSearched: ${totalSearched}, wait time: ${requeueWaitTime}ms`);
+        }, 5000);
         const words = [];
         for (const vowel of ["a", "e", "i", "o", "u", "y"]) {
             for (const letter of letters) {
@@ -166,31 +343,32 @@ const getUnits = () => new Promise(async(resolve, reject) => {
         }
         const queryQueue = [];
         const manageQueue = () => {
-            if (words.length) {
-                if (queryQueue.length < 10) {
-                    const word = words.pop();
-                    queryQueue.push(word);
-                    searchByString(word).then(() => queryQueue.splice(queryQueue.indexOf(word), 1)).catch(err => {
-                        console.log(`Search failed for: ${word}, err: ${err}`);
-                        queryQueue.splice(queryQueue.indexOf(word), 1);
-                        setTimeout(() => {
-                            words.push(word);
-                        }, 100);
-                    });
-                }
-            }
-            else if (queryQueue.length === 0) {
-                return;
+            const delta = maxQuerySize - queryQueue.length;
+            if (delta > 0 && words.length) {
+                const word = words.pop();
+                queryQueue.push(word);
+                searchByString(word).then(additionalWords => {
+                    requeueWaitTime = Math.floor(Math.max(1, requeueWaitTime * 0.9));
+                    queryQueue.splice(queryQueue.indexOf(word), 1);
+                    words.push(...additionalWords);
+                }).catch(err => {
+                    if (err === "TIMEOUT_REACHED" || err.statusCode) {
+                        requeueWaitTime = Math.ceil(Math.min(requeueWaitTime * 1.25, maxRequeueTime));
+                    }
+                    queryQueue.splice(queryQueue.indexOf(word), 1);
+                    words.push(word);
+                });
             }
             setTimeout(async () => {
-                if (words.length || queryQueue.length) {
+                if (requeueWaitTime > 1 || words.length || queryQueue.length) {
                     manageQueue();
                 }
                 else {
-                    console.log(`Searching, finished at ${new Date().toString()}`);
+                    console.log(`Searching finished at ${new Date().toString()} found ${totalSearched} units`);
+                    clearInterval(inerval);
                     resolve(unitsByType);
                 }
-            }, 1000);
+            }, requeueWaitTime);
         };
         manageQueue();
     }
@@ -202,7 +380,7 @@ const getUnits = () => new Promise(async(resolve, reject) => {
 Promise.all([getUnits(), parseMtfs()]).then(async ([unitsByType, mtfs]) => {
     try {
         for (const key of Object.keys(unitsByType)) {
-            const units = unitsByType[key];
+            const units = Object.values(unitsByType[key]);
             if (mtfs) {
                 for (const unit of units) {
                     const mtf = mtfs.get(unit.nm);
