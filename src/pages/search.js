@@ -169,7 +169,7 @@ template.innerHTML = `
             <vpl-label prefix="Mech Name:" id="label">
                 <div slot="content" id="searchContainer">
                     <input type="text" id="unitName"></input>
-                    <img src="/assets/spinner.svg" id="spinner"></img>
+                    <img src="./assets/spinner.svg" id="spinner"></img>
                 </div>
             </vpl-label>
             <button id="search">Search</button>
@@ -257,12 +257,12 @@ template.innerHTML = `
             </div>
             <div id="advancedButtonsContainer" class="spacedColumn">
                 <button id="advancedToggle" class="layeredImageContainer">
-                    <img src="/assets/magnifyingGlass.svg">
-                    <img src="/assets/plus.svg">
+                    <img src="./assets/magnifyingGlass.svg">
+                    <img src="./assets/plus.svg">
                 </button>
                 <button id="clearAdvanced" class="hidden layeredImageContainer">
-                    <img src="/assets/magnifyingGlass.svg">
-                    <img src="/assets/not.svg">
+                    <img src="./assets/magnifyingGlass.svg">
+                    <img src="./assets/not.svg">
                 </button>
             </div>
         </div>

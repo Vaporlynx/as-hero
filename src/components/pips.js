@@ -42,9 +42,9 @@ template.innerHTML = `
             user-select: none;
         }
     </style>
-    <img src="/assets/minus.svg" id="minusGuide"></img>
+    <img src="./assets/minus.svg" id="minusGuide"></img>
     <div id="pipsContainer"></div>
-    <img src="/assets/plus.svg" id="plusGuide"></img>
+    <img src="./assets/plus.svg" id="plusGuide"></img>
 `;
 
 export default class pips extends HTMLElement {

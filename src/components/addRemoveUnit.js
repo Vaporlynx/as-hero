@@ -32,9 +32,9 @@ template.innerHTML = `
         }
     </style>
 
-    <button id="add"><img src="/assets/plus.svg"></img></button>
-    <img src="/assets/mech.svg" id="mech"></img>
-    <button id="remove"><img src="/assets/minus.svg"></img></button>
+    <button id="add"><img src="./assets/plus.svg"></img></button>
+    <img src="./assets/mech.svg" id="mech"></img>
+    <button id="remove"><img src="./assets/minus.svg"></img></button>
 `;
 
 export default class addRemoveUnits extends HTMLElement {

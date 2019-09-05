@@ -73,7 +73,7 @@ unitDBConnection.onupgradeneeded = event => {
     event.target.result.createObjectStore(unitType, {keyPath: "name"});
   }
   for (const type of unitTypes) {
-    fetch(`/defs/${type}-def.json`).then(request => request.text()).then(unParsed => JSON.parse(unParsed)).then(async data => {
+    fetch(`./defs/${type}-def.json`).then(request => request.text()).then(unParsed => JSON.parse(unParsed)).then(async data => {
       for (const key of Object.keys(data)) {
         const datum = data[key];
         const unit = {
@@ -136,7 +136,7 @@ const searchUnits = url => {
       const units = await getUnits(type);
       for (const unit of units) {
         unitsSearched++;
-        // TODO: these if statements are very similar.  Look at programatic way to organize them, maintain maintainability 
+        // TODO: these if statements are very similar.  Look at programatic way to organize them, maintain maintainability
         let valid = true;
         const parsedMove = unit.movement.replace(/[\\"a-z]/ig, "").split("/").map(i => parseInt(i));
         const parsedDamage = [unit.damage.short, unit.damage.medium, unit.damage.long];
@@ -228,6 +228,42 @@ const searchUnits = url => {
   });
 };
 
+const fetchAsset = request => {
+  return new Promise(async (resolve, reject) => {
+    let resolved = false;
+
+    const cachePromise = caches.match(request).then(cachedData => {
+      if (!resolved && cachedData) {
+        resolved = true;
+        resolve(cachedData);
+      }
+    }).catch(err => {
+      // swallow error
+    });
+
+    fetch(request).then(response => {
+      if (!resolved) {
+        resolved = true;
+        resolve(response);
+        if (response.status === 200) {
+          caches.open("urlCache").then(cache => {
+            cache.put(request, response.clone());
+          }).catch(err => {
+            // Swallow error
+          });
+        }
+      }
+    }).catch(err => {
+      // Only reject if we errored and the cache has no match
+      cachePromise.then(cachedData => {
+        if (!cachedData) {
+          reject(err);
+        }
+      });
+    });
+  });
+};
+
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
@@ -240,5 +276,8 @@ self.addEventListener("fetch", event => {
   }
   else if (url.pathname === "/sw-load-status") {
     event.respondWith(new Response(`${!loading ? 1 : loadedTypes.length / unitTypes.length}`));
+  }
+  else if (url.pathname.includes("/as-hero/")) {
+    event.respondWith(fetchAsset(event.request));
   }
 });
