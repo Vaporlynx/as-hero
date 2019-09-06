@@ -40,6 +40,10 @@ template.innerHTML = `
             --pipSize: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
             --bevelOffset: calc(2.5vw / var(--cardRows) * var(--cardSizeOffset));
         }
+
+        #modeToggle {
+            justify-self: flex-end;
+        }
     </style>
 
     <div id="controls">
@@ -50,6 +54,7 @@ template.innerHTML = `
         <vpl-label prefix="PV Total:" id="label">
             <div id="pvTotal" slot="content"></div>
         </vpl-label>
+        <button id="modeToggle">Gear</button>
     </div>
     <div id="roster"> </div>
 `;
@@ -64,6 +69,10 @@ export default class rosterPage extends HTMLElement {
 
     constructor() {
         super();
+
+        this.unitCard = "unit-card";
+        this.rosterCounterpart = "gear-roster";
+        this.searchPage = "search";
 
         this.attachShadow({mode: "open"}).appendChild(this.constructor.template.content.cloneNode(true));
 
@@ -86,7 +95,14 @@ export default class rosterPage extends HTMLElement {
         this.searchElem = this.shadowRoot.getElementById("search");
         this.searchElem.addEventListener("pointerdown", event => {
             urlHelper.setParams({
-                page: "search",
+                page: this.searchPage,
+            });
+        });
+
+        this.modeToggleElem = this.shadowRoot.getElementById("modeToggle");
+        this.modeToggleElem.addEventListener("pointerdown", event => {
+            urlHelper.setParams({
+                page: this.rosterCounterpart,
             });
         });
 
@@ -130,11 +146,11 @@ export default class rosterPage extends HTMLElement {
             try {
                 const unParsed = await window.fetch(`/sw-units?unitIds=${units.map(i => i.id).join(",")}`);
                 const unitDefs = JSON.parse(await unParsed.text());
-                
+
                 units.sort((a, b) => a.squad > b.squad ? 1 : -1).forEach((unit, index) => {
                     const def = unitDefs.find(def => def.id === unit.id);
                     if (def) {
-                        const card = document.createElement("unit-card");
+                        const card = document.createElement(this.unitCard);
                         card.data = Object.assign({}, def, unit);
                         pvTotal += unitHelper.calculatePointValue(def.pv, unit.skill);
                         card.addEventListener("dataUpdated", event => {

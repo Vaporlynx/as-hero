@@ -101,6 +101,8 @@ unitDBConnection.onupgradeneeded = event => {
             techLevel: datum.meta.tl,
             productionDate: datum.meta.pd,
           },
+          weapons: datum.wp || {},
+          heatsinks: datum.hs || 10,
         };
         await setUnit(unit.type, unit);
       }
