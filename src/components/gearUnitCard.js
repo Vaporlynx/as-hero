@@ -160,8 +160,7 @@ template.innerHTML = `
             </div>
         </div>
         <div id="lowerDetails" class="spacedRow">
-            <vpl-label prefix="Traits" class=" bevel">
-            </vpl-label>
+            <div>Traits</div>
             <div id="traits">
             </div>
             <div id="weapons">
@@ -192,6 +191,8 @@ export default class GearUnitCard extends HTMLElement {
         this.pilotingElem = this.shadowRoot.getElementById("piloting");
         this.electronicWarfareElem = this.shadowRoot.getElementById("electronicWarfare");
 
+        this.actionsElem = this.shadowRoot.getElementById("actions");
+
         this.armorRatingElem = this.shadowRoot.getElementById("armorRating");
         this.hullElem = this.shadowRoot.getElementById("hull");
         this.structureElem = this.shadowRoot.getElementById("structure");
@@ -199,6 +200,9 @@ export default class GearUnitCard extends HTMLElement {
         this.noteContainerElem = this.shadowRoot.getElementById("noteContainer");
         this.noteElem = this.shadowRoot.getElementById("note");
         this.imageElem = this.shadowRoot.getElementById("image");
+
+        this.traitsElem = this.shadowRoot.getElementById("traits");
+        this.weaponsElem = this.shadowRoot.getElementById("weapons");
 
         this.hullElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
         this.structureElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
@@ -220,11 +224,15 @@ export default class GearUnitCard extends HTMLElement {
                 this.gunneryElem.textContent = val.gunnery;
                 this.pilotingElem.textContent = val.piloting;
                 this.electronicWarfareElem.textContent = val.electronicWarfare;
+                this.actionsElem.textContent = val.actions;
+                this.armorRatingElem.textContent = val.armorRating;
                 this.hullElem.totalPips = val.totalHull;
                 this.hullElem.marked = val.hull;
                 this.structureElem.totalPips = val.totalStructure;
                 this.structureElem.marked = val.structure;
                 this.imageElem.src = val.image;
+                this.traitsElem.textContent = val.traits;
+                this.weaponsElem.textContent = val.weapons;
                 if (val.note) {
                     this.noteElem.textContent = val.note;
                     this.noteContainerElem.classList.remove("hidden");
