@@ -4,7 +4,7 @@ export default class gearSearchPage extends searchPage {
     constructor() {
         super();
 
-        this.unitCard = "unit-card";
+        this.unitCard = "gear-unit-card";
         this.searchCounterpart = "search";
         this.rosterPage = "gear-roster";
     }
