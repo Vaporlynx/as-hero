@@ -36,13 +36,16 @@ export default class gearRosterPage extends rosterPage {
                     const ECM = (def.special || "").split(",").filter(i => ["ecm", "prb", "rcn"].includes(i.toLowerCase()));
                     const armorRating = Math.round(def.armor / 2 + 5);
                     const torsoWeapons = [];
-                    const limbWeapons = [`Punch pen${armorRating - 1} Link`, `Kick pen${armorRating} AOE 2"`];
-                    for (const [location, weapon] of Object.entries(def.weapons)) {
+                    const limbWeapons = [
+                        {code: "Punch", range: 0, pen: armorRating - 1, traits: ["Link"], category: "Melee"},
+                        {code: "Kick", range: 0, pen: armorRating, traits: ["AE:2"], category: "Melee"},
+                    ];
+                    for (const [location, weapons] of Object.entries(def.weapons)) {
                         if (["ct", "rt", "lt", "h"].includes(location)) {
-                            torsoWeapons.push(weapon);
+                            torsoWeapons.push(...weapons);
                         }
                         else {
-                            limbWeapons.push(weapon);
+                            limbWeapons.push(...weapons);
                         }
                     }
                     const actions = 1 + def.heatsinks / 10;
@@ -51,7 +54,7 @@ export default class gearRosterPage extends rosterPage {
                         id: def.id,
                         name: def.name,
                         type: "Torso",
-                        movement: `G:${Math.round(parseInt(def.movement) * 0.66)}`,
+                        movement: "-",
                         unitAvaliability: "",
                         gunnery: 5,
                         piloting: 6,
@@ -66,7 +69,7 @@ export default class gearRosterPage extends rosterPage {
                         limb: {
                             name: def.name,
                             type: "Limbs",
-                            movement: "-",
+                            movement: `G:${Math.round(parseInt(def.movement) * 0.66)}`,
                             unitAvaliability: "",
                             gunnery: 5,
                             piloting: 5,

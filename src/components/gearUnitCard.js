@@ -1,4 +1,5 @@
 import * as unitHelper from "../../src/unitHelper.js";
+import * as heavyGearWeapons from "../../defs/heavyGearWeapons.js";
 
 const template = document.createElement("template");
 template.innerHTML = `
@@ -159,12 +160,17 @@ template.innerHTML = `
                 </div>
             </div>
         </div>
-        <div id="lowerDetails" class="spacedRow">
+        <div id="lowerDetails" class="spacedColumn">
             <div>Traits</div>
             <div id="traits">
             </div>
-            <div id="weapons">
-            </div>
+            <table id="weaponsContainer">
+                <th>Code</th>
+                <th>Range</th>
+                <th>Pen</th>
+                <th>Traits</th>
+                <th>Category</th>
+            </table>
         </div>
         <vpl-label prefix="" id="noteContainer" class="bevel hidden">
             <div id="note" slot="content"></div>
@@ -202,7 +208,7 @@ export default class GearUnitCard extends HTMLElement {
         this.imageElem = this.shadowRoot.getElementById("image");
 
         this.traitsElem = this.shadowRoot.getElementById("traits");
-        this.weaponsElem = this.shadowRoot.getElementById("weapons");
+        this.weaponsContainerElem = this.shadowRoot.getElementById("weaponsContainer");
 
         this.hullElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
         this.structureElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
@@ -232,7 +238,22 @@ export default class GearUnitCard extends HTMLElement {
                 this.structureElem.marked = val.structure;
                 this.imageElem.src = val.image;
                 this.traitsElem.textContent = val.traits;
-                this.weaponsElem.textContent = val.weapons;
+                if (val.weapons.length) {
+                    for (const weapon of val.weapons) {
+                        const def = (typeof weapon === "string" ? heavyGearWeapons.weapons.find(i => i.BTCode === weapon) : weapon);
+                        if (def) {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${def.code}</td>
+                                <td>${def.range}</td>
+                                <td>${def.pen}</td>
+                                <td>${def.traits.join(", ")}</td>
+                                <td>${def.category}</td>
+                            `;
+                            this.weaponsContainerElem.appendChild(row);
+                        }
+                    }
+                }
                 if (val.note) {
                     this.noteElem.textContent = val.note;
                     this.noteContainerElem.classList.remove("hidden");

@@ -2,19 +2,20 @@ const fs = require("fs").promises;
 
 const request = require("request-promise-native");
 
-const maxQuerySize = 10;
+let maxQuerySize = 50;
 const requestTimeout = 60000;
 const maxRequeueTime = 60000;
 
 // TODO: pull this out into a different file.
 // TODO: finish adding the other hundreds of weapon strings present in the mtf files
-const parseWeaponString = rawString => {
+const parseWeaponString = (rawString, techBase) => {
     const split = rawString.split(" ");
     // intentional !=
+    // eslint-disable-next-line eqeqeq
     if (split[0] != parseInt(split[0])) {
         split.splice(0, 0, 1);
     }
-    const clan = rawString.toLowerCase().includes("cl");
+    const clan = rawString.toLowerCase().includes("cl") || techBase === "Clan";
     if (split[1].toLowerCase().indexOf("is") === 0 || split[1].toLowerCase().indexOf("cl") === 0) {
         split[1] = split[1].slice(2);
     }
@@ -186,6 +187,9 @@ const parseMtfs = () => new Promise(resolve => {
                                     unit.class = line;
                                     unit.variant = split[index + 1];
                                     unit.name = `${unit.class.trim()} ${unit.variant.trim()}`;
+                                    if (unit.class.toLowerCase().includes("uller")) {
+                                        console.log("asdf");
+                                    }
                                 }
 
                                 const [key, value] = (line.split(":")).map(i => i.trim());
@@ -193,6 +197,7 @@ const parseMtfs = () => new Promise(resolve => {
                                     switch (key) {
                                         case "Era": unit.year = parseInt(value); break;
                                         case "Mass": unit.weight = parseInt(value); break;
+                                        case "TechBase": unit.techBase = value; break;
                                         case "Heat Sinks": {
                                             if (value.includes("Double")) {
                                                 unit.heatSinks = parseInt(value.split(" ")[0]) * 2;
@@ -205,10 +210,13 @@ const parseMtfs = () => new Promise(resolve => {
                                             split.slice(index + 1, index + 1 + parseInt(value)).map(line => {
                                                 const [weapon, locationString] = line.split(", ");
                                                 if (weapon && locationString) {
-                                                    const parsedWeapons = parseWeaponString(weapon);
+                                                    const parsedWeapons = parseWeaponString(weapon, unit.techBase);
                                                     const location = locationString.split(" ").map(i => i[0].toLowerCase()).join("");
                                                     for (const weapon of parsedWeapons) {
-                                                        unit.weapons[location] = weapon;
+                                                        if (!unit.weapons[location]) {
+                                                            unit.weapons[location] = [];
+                                                        }
+                                                        unit.weapons[location].push(weapon);
                                                         weapons.add(weapon);
                                                     }
                                                 }
@@ -252,7 +260,6 @@ const getUnits = () => new Promise(async(resolve, reject) => {
 
     const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
     const unitsByType = {};
-    let totalSearched = 0;
 
     const searchByString = searchString => {
         return new Promise(async (resolve, reject) => {
@@ -275,7 +282,6 @@ const getUnits = () => new Promise(async(resolve, reject) => {
                 completed = true;
                 const parsed = JSON.parse(unParsed);
                 const totalFound = parsed.Units.length;
-                totalSearched += totalFound;
                 if (parsed && parsed.Units) {
                     for (const Unit of parsed.Units) {
                         const unit = {
@@ -332,10 +338,10 @@ const getUnits = () => new Promise(async(resolve, reject) => {
     console.log(`Searching, started at ${new Date().toString()}`);
     try {
         let requeueWaitTime = 1;
-        const inerval = setInterval(() => {
-            console.log(`TotalSearched: ${totalSearched}, wait time: ${requeueWaitTime}ms`);
-        }, 5000);
         const words = [];
+        const inerval = setInterval(() => {
+            console.log(`Words remaining: ${words.length} wait time: ${requeueWaitTime}ms`);
+        }, 5000);
         for (const vowel of ["a", "e", "i", "o", "u", "y"]) {
             for (const letter of letters) {
                 words.push(`${vowel}${letter}`);
@@ -364,7 +370,7 @@ const getUnits = () => new Promise(async(resolve, reject) => {
                     manageQueue();
                 }
                 else {
-                    console.log(`Searching finished at ${new Date().toString()} found ${totalSearched} units`);
+                    console.log(`Searching finished at ${new Date().toString()}`);
                     clearInterval(inerval);
                     resolve(unitsByType);
                 }
