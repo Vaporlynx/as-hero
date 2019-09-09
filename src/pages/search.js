@@ -181,7 +181,7 @@ template.innerHTML = `
                 <div id="pvTotal" slot="content">0</div>
             </vpl-label>
             <button id="clear">Clear Roster</button>
-            <button id="modeToggle">Gear</button>
+            <button id="modeToggle" class="hidden">Gear</button>
         </div>
         <div id="advancedControls" class="spacedRow">
             <div id="expandableControls" class="spacedColumn hidden">

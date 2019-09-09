@@ -7,6 +7,16 @@ template.innerHTML = `${rosterPage.template.innerHTML}
             display: flex;
             flex-direction: row;
         }
+
+        gear-unit-card {
+            margin: 5px;
+            width: calc(71.42vh / var(--cardRows) * var(--cardSizeOffset));
+            height: calc(100vh / var(--cardRows) * var(--cardSizeOffset));
+            position: relative;
+            font-size: calc(2vh / var(--cardRows) * var(--cardSizeOffset));
+            --pipSize: calc(2vh / var(--cardRows) * var(--cardSizeOffset));
+            --bevelOffset: calc(2.5vh / var(--cardRows) * var(--cardSizeOffset));
+        }
     </style>`
 ;
 
@@ -21,7 +31,7 @@ export default class gearRosterPage extends rosterPage {
 
         this.unitCard = "gear-unit-card";
         this.rosterCounterpart = "roster";
-        this.searchPage = "gear-search";
+        this.searchPage = "search";
     }
 
     async buildRoster(units) {
@@ -38,7 +48,7 @@ export default class gearRosterPage extends rosterPage {
                     const torsoWeapons = [];
                     const limbWeapons = [
                         {code: "Punch", range: 0, pen: armorRating - 1, traits: ["Link"], category: "Melee"},
-                        {code: "Kick", range: 0, pen: armorRating, traits: ["AE:2"], category: "Melee"},
+                        {code: "Kick", range: 0, pen: armorRating, traits: ["AE:2", "Proximity"], category: "Melee"},
                     ];
                     for (const [location, weapons] of Object.entries(def.weapons)) {
                         if (["ct", "rt", "lt", "h"].includes(location)) {
@@ -50,6 +60,17 @@ export default class gearRosterPage extends rosterPage {
                     }
                     const actions = 1 + def.heatsinks / 10;
                     const autopilot = actions - Math.floor(actions) >= 0.5;
+                    const traits = ["Battlemech Crits", "Neurohelmet Control", "Battery Fire"];
+                    if (autopilot) {
+                        traits.push("Autopilot");
+                    }
+                    if (def.movement.includes("j")) {
+                        const jumpMovement = Math.round(parseInt(def.movement.split("/")[1] || def.movement) * 0.5);
+                        traits.push(`Jumpjets: ${jumpMovement}`);
+                    }
+                    if ([].concat(torsoWeapons).concat(limbWeapons).find(i => ["CLAN_TAG", "IS_TAG"].includes(i))) {
+                        traits.push("TD: 2");
+                    }
                     return {
                         id: def.id,
                         name: def.name,
@@ -60,13 +81,14 @@ export default class gearRosterPage extends rosterPage {
                         piloting: 6,
                         electronicWarfare: 6 - ECM.length,
                         armorRating,
-                        totalHull: 5,
+                        totalArmor: 5,
                         totalStructure: 3,
                         image: def.image,
                         weapons: torsoWeapons,
                         actions: Math.floor(actions),
-                        traits: `Battlemech Crits, Neurohelmet Control, Battery Fire${autopilot ? ", Autopilot" : ""}`,
+                        traits,
                         limb: {
+                            id: def.id,
                             name: def.name,
                             type: "Limbs",
                             movement: `G:${Math.round(parseInt(def.movement) * 0.66)}`,
@@ -75,8 +97,10 @@ export default class gearRosterPage extends rosterPage {
                             piloting: 5,
                             electronicWarfare: 6,
                             armorRating: Math.round(def.armor / 2 + 4),
-                            totalHull: 4,
+                            totalArmor: 4,
+                            armor: 4,
                             totalStructure: 2,
+                            structure: 2,
                             image: def.image,
                             weapons: limbWeapons,
                             actions: "0*",
@@ -100,11 +124,12 @@ export default class gearRosterPage extends rosterPage {
                         if (def.limb) {
                             const limbCard = document.createElement(this.unitCard);
                             cardContainer.appendChild(limbCard);
-                            limbCard.data = Object.assign({}, def.limb, unit);
-                            limbCard.addEventListener("dataUpdated", event => {
-                                this.units[index] = event.detail.data;
-                                this.pushUnits(this.units);
-                            });
+                            limbCard.data = Object.assign({}, def.limb);
+                            // TODO: Fix the issue with this overwriting the base component stats
+                            // limbCard.addEventListener("dataUpdated", event => {
+                            //     this.units[index] = event.detail.data;
+                            //     this.pushUnits(this.units);
+                            // });
                         }
                         this.rosterElem.appendChild(cardContainer);
                     }

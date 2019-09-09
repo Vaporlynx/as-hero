@@ -25,7 +25,7 @@ template.innerHTML = `
             height: 100%;
             width: 100%;
         }
-        #cardBody > div:not(:last-child) {
+        #cardBody > *:not(:last-child) {
             margin-bottom: var(--fullPad);
         }
 
@@ -47,11 +47,12 @@ template.innerHTML = `
             background-color: var(--nonInteractiveElement2BackgroundColor);
             clip-path: polygon(0 0, calc(100% - var(--bevelOffset)) 0, 100% var(--bevelOffset), 100% 100%, var(--bevelOffset) 100%, 0 calc(100% - var(--bevelOffset)));
             padding: calc(var(--bevelOffset) / 2);
+            box-sizing: border-box;
         }
 
         #header {
             justify-content: space-between;
-            height: 10%;
+            height: 2em;
             font-weight: bold;
             font-size: 125%;
             align-items: center;
@@ -63,6 +64,7 @@ template.innerHTML = `
         #header > *:not(:last-child) {
             margin-right: var(--fullPad);
         }
+
         #upperDetails {
             height: 40%;
             font-size: 130%;
@@ -70,28 +72,21 @@ template.innerHTML = `
 
         #mainDetails {
             width: 70%;
-        }
-        #mainDetails > div {
-            height: 30%;
-            align-items: center;
+            height: 100%;
+            justify-content: space-around;
         }
         #mainDetails > div:not(:last-child) {
             margin-bottom: var(--fullPad);
         }
 
         #lowerDetails {
-            height: 50%;
             font-size: 140%;
         }
 
         #image {
-            width: 30%;
+            height: 100%;
             object-fit: contain;
-            margin-left: var(--fullPad);
-        }
-
-        #attributes {
-            justify-content: space-around;
+            margin-right: var(--fullPad);
         }
 
         #noteContainer {
@@ -108,63 +103,67 @@ template.innerHTML = `
         #health vpl-label vpl-pips {
             flex-wrap: wrap;
         }
+
+        #traitsContainer {
+            margin-bottom: var(--fullPad); 
+        }
     </style>
     <div id="cardBody" class="spacedColumn">
         <div id="header" class="spacedRow">
             <div id="name" class="spacedColumn bevel">
             </div>
-            <vpl-label prefix="UA" id="uaContainer" class="bevel">
-                <div id="unitAvaliability" slot="content"></div>
-            </vpl-label>
             <vpl-label prefix="TV:" id="tvContainer" class="bevel">
                 <div id="tv" slot="content"></div>
             </vpl-label>
         </div>
+        <vpl-label prefix="UA" id="uaContainer" class="bevel">
+            <div id="unitAvaliability" slot="content"></div>
+        </vpl-label>
         <div id="upperDetails" class="spacedRow">
             <img id="image"></img>
-            <div class="spacedColumn" id="mainDetails">            
-                <div id="attributes" class="spacedRow bevel">
-                    <vpl-label prefix="Type">
-                        <div id="type" slot="content">
-                        </div>
-                    </vpl-label>
-                    <vpl-label prefix="MR:">
-                        <div id="movement" slot="content">
-                        </div>
-                    </vpl-label>
-                    <div id="skills">
-                        <vpl-label prefix="GU">
-                            <div id="gunnery" slot="content"></div>
-                        </vpl-label>
-                        <vpl-label prefix="PI">
-                            <div id="piloting" slot="content"></div>
-                        </vpl-label>
-                        <vpl-label prefix="EW">
-                            <div id="electronicWarfare" slot="content"></div>
-                        </vpl-label>
-                        <vpl-label prefix="A">
-                            <div id="actions" slot="content"></div>
-                        </vpl-label>
+            <div class="spacedColumn bevel" id="mainDetails">
+                <vpl-label prefix="Type">
+                    <div id="type" slot="content">
                     </div>
-                    <div id="health" class="spacedColumn bevel">
+                </vpl-label>
+                <vpl-label prefix="MR:">
+                    <div id="movement" slot="content">
+                    </div>
+                </vpl-label>
+                <div id="skills">
+                    <vpl-label prefix="GU">
+                        <div id="gunnery" slot="content"></div>
+                    </vpl-label>
+                    <vpl-label prefix="PI">
+                        <div id="piloting" slot="content"></div>
+                    </vpl-label>
+                    <vpl-label prefix="EW">
+                        <div id="electronicWarfare" slot="content"></div>
+                    </vpl-label>
+                    <vpl-label prefix="A">
+                        <div id="actions" slot="content"></div>
+                    </vpl-label>
+                </div>
+                <div id="health" class="spacedColumn">
                     <vpl-label prefix="Armor Rating">
                         <div id="armorRating" slot="content"></div>
                     </vpl-label>
-                        <vpl-label prefix="H">
-                            <vpl-pips id="hull" slot="content" mode="subtractive"></vpl-pips>
-                        </vpl-label>
-                        <vpl-label prefix="S">
-                            <vpl-pips id="structure" slot="content" mode="subtractive"></vpl-pips>
-                        </vpl-label>
-                    </div>
+                    <vpl-label prefix="H">
+                        <vpl-pips id="armor" slot="content" mode="subtractive"></vpl-pips>
+                    </vpl-label>
+                    <vpl-label prefix="S">
+                        <vpl-pips id="structure" slot="content" mode="subtractive"></vpl-pips>
+                    </vpl-label>
                 </div>
             </div>
         </div>
         <div id="lowerDetails" class="spacedColumn">
-            <div>Traits</div>
-            <div id="traits">
+            <div id="traitsContainer" class="bevel">
+                Traits
+                <div id="traits">
+                </div>
             </div>
-            <table id="weaponsContainer">
+            <table id="weaponsContainer" class="bevel">
                 <th>Code</th>
                 <th>Range</th>
                 <th>Pen</th>
@@ -200,7 +199,7 @@ export default class GearUnitCard extends HTMLElement {
         this.actionsElem = this.shadowRoot.getElementById("actions");
 
         this.armorRatingElem = this.shadowRoot.getElementById("armorRating");
-        this.hullElem = this.shadowRoot.getElementById("hull");
+        this.armorElem = this.shadowRoot.getElementById("armor");
         this.structureElem = this.shadowRoot.getElementById("structure");
 
         this.noteContainerElem = this.shadowRoot.getElementById("noteContainer");
@@ -210,7 +209,7 @@ export default class GearUnitCard extends HTMLElement {
         this.traitsElem = this.shadowRoot.getElementById("traits");
         this.weaponsContainerElem = this.shadowRoot.getElementById("weaponsContainer");
 
-        this.hullElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
+        this.armorElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
         this.structureElem.addEventListener("change", event => this.handleUnitAttributesChanged(event));
 
         this._data = null;
@@ -232,14 +231,14 @@ export default class GearUnitCard extends HTMLElement {
                 this.electronicWarfareElem.textContent = val.electronicWarfare;
                 this.actionsElem.textContent = val.actions;
                 this.armorRatingElem.textContent = val.armorRating;
-                this.hullElem.totalPips = val.totalHull;
-                this.hullElem.marked = val.hull;
+                this.armorElem.totalPips = val.totalArmor;
+                this.armorElem.marked = val.armor;
                 this.structureElem.totalPips = val.totalStructure;
                 this.structureElem.marked = val.structure;
                 this.imageElem.src = val.image;
                 this.traitsElem.textContent = val.traits;
                 if (val.weapons.length) {
-                    for (const weapon of val.weapons) {
+                    for (const weapon of val.weapons.sort()) {
                         const def = (typeof weapon === "string" ? heavyGearWeapons.weapons.find(i => i.BTCode === weapon) : weapon);
                         if (def) {
                             const row = document.createElement("tr");
@@ -251,6 +250,9 @@ export default class GearUnitCard extends HTMLElement {
                                 <td>${def.category}</td>
                             `;
                             this.weaponsContainerElem.appendChild(row);
+                        }
+                        else {
+                            console.log(`Found no weeapon def for: ${weapon}`);
                         }
                     }
                 }

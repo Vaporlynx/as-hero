@@ -44,6 +44,9 @@ template.innerHTML = `
         #modeToggle {
             justify-self: flex-end;
         }
+        #modeToggle > img {
+            height: 26px;
+        }
     </style>
 
     <div id="controls">
@@ -54,7 +57,9 @@ template.innerHTML = `
         <vpl-label prefix="PV Total:" id="label">
             <div id="pvTotal" slot="content"></div>
         </vpl-label>
-        <button id="modeToggle">Gear</button>
+        <button id="modeToggle" class="layeredImageContainer">
+            <img src="./assets/gear.svg">
+        </button>
     </div>
     <div id="roster"> </div>
 `;
