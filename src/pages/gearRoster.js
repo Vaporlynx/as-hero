@@ -60,7 +60,7 @@ export default class gearRosterPage extends rosterPage {
                     }
                     const actions = 1 + def.heatsinks / 10;
                     const autopilot = actions - Math.floor(actions) >= 0.5;
-                    const traits = ["Battlemech Crits", "Neurohelmet Control", "Battery Fire"];
+                    const traits = ["Mech Crits", "Neurohelmet Control", "Battery Fire"];
                     if (autopilot) {
                         traits.push("Autopilot");
                     }
@@ -104,7 +104,7 @@ export default class gearRosterPage extends rosterPage {
                             image: def.image,
                             weapons: limbWeapons,
                             actions: "0*",
-                            traits: "Battlemech Crits, Arms, Battery Fire",
+                            traits: "Mech Crits, Arms, Battery Fire",
                         },
                     };
                 });
