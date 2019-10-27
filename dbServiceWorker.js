@@ -102,10 +102,11 @@ const fetchUnits = () => Promise.all(unitTypes.map(type => new Promise(async (re
       };
       await setUnit(unit.type, unit);
     }
-    resolve({type});
+    loadedTypes.push(type);
+    resolve();
   }
   catch (err) {
-    resolve({type, err});
+    resolve(err);
   }
 })));
 
@@ -271,11 +272,10 @@ const fetchAsset = request => {
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
-  const results = await fetchUnits();
-  for (const result of results) {
-    loadedTypes.push(result.type);
-    if (result.err) {
-      handleError(result.err);
+  const errors = await fetchUnits();
+  for (const error of errors) {
+    if (error) {
+      handleError(error);
     }
   }
 };
