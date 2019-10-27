@@ -67,50 +67,53 @@ const setUnit = (type,  data) => {
   });
 };
 
+const fetchUnits = () => Promise.all(unitTypes.map(type => new Promise(async (resolve, _) => {
+  try {
+    const data = await (await fetch(`./defs/${type}-def.json`)).json();
+    for (const key of Object.keys(data)) {
+      const datum = data[key];
+      const unit = {
+        id: datum.id,
+        name: datum.nm,
+        pv: datum.pv,
+        armor: datum.ar,
+        structure: datum.st,
+        damage: {
+          short: datum.da.s,
+          medium: datum.da.m,
+          long: datum.da.l,
+        },
+        movement: datum.mv,
+        image: datum.img,
+        type: datum.tp,
+        size: datum.sz,
+        role: datum.rl,
+        skill: 4,
+        special: datum.spc,
+        class: datum.cl,
+        variant: datum.vnt,
+        totalOverheat: datum.ov,
+        metadata: {
+          techLevel: datum.meta.tl,
+          productionDate: datum.meta.pd,
+        },
+        weapons: datum.wp || {},
+        heatsinks: datum.hs || 10,
+      };
+      await setUnit(unit.type, unit);
+    }
+    resolve({type});
+  }
+  catch (err) {
+    resolve({type, err});
+  }
+})));
+
+
 unitDBConnection.onupgradeneeded = event => {
   loading = true;
   for (const unitType of unitTypes) {
     event.target.result.createObjectStore(unitType, {keyPath: "name"});
-  }
-  for (const type of unitTypes) {
-    fetch(`./defs/${type}-def.json`).then(request => request.text()).then(unParsed => JSON.parse(unParsed)).then(async data => {
-      for (const key of Object.keys(data)) {
-        const datum = data[key];
-        const unit = {
-          id: datum.id,
-          name: datum.nm,
-          pv: datum.pv,
-          armor: datum.ar,
-          structure: datum.st,
-          damage: {
-            short: datum.da.s,
-            medium: datum.da.m,
-            long: datum.da.l,
-          },
-          movement: datum.mv,
-          image: datum.img,
-          type: datum.tp,
-          size: datum.sz,
-          role: datum.rl,
-          skill: 4,
-          special: datum.spc,
-          class: datum.cl,
-          variant: datum.vnt,
-          totalOverheat: datum.ov,
-          metadata: {
-            techLevel: datum.meta.tl,
-            productionDate: datum.meta.pd,
-          },
-          weapons: datum.wp || {},
-          heatsinks: datum.hs || 10,
-        };
-        await setUnit(unit.type, unit);
-      }
-      loadedTypes.push(type);
-    }).catch(err => {
-      loadedTypes.push(type);
-      handleError(`Failed to get bundled def for type ${type}`);
-    });
   }
 };
 
@@ -142,7 +145,6 @@ const searchUnits = url => {
         let valid = true;
         const parsedMove = unit.movement.replace(/[\\"a-z]/ig, "").split("/").map(i => parseInt(i));
         const parsedDamage = [unit.damage.short, unit.damage.medium, unit.damage.long];
-        // TODO: web service workers don't support module imports?
         let targetMovementModifier = 0;
         if (parsedMove[0] < 5) {
           targetMovementModifier = 0;
@@ -269,6 +271,13 @@ const fetchAsset = request => {
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
+  const results = await fetchUnits();
+  for (const result of results) {
+    loadedTypes.push(result.type);
+    if (result.err) {
+      handleError(result.err);
+    }
+  }
 };
 
 self.addEventListener("fetch", event => {
