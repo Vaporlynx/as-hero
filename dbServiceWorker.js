@@ -106,6 +106,7 @@ const fetchUnits = () => Promise.all(unitTypes.map(type => new Promise(async (re
     resolve();
   }
   catch (err) {
+    loadedTypes.push(type);
     resolve(err);
   }
 })));
@@ -273,6 +274,7 @@ unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
   const errors = await fetchUnits();
+  loading = false;
   for (const error of errors) {
     if (error) {
       handleError(error);
