@@ -70,9 +70,7 @@ template.innerHTML = `
             overflow: auto;
             display: flex;
             flex-wrap: wrap;
-        }
-        #mechContainer > * {
-            margin-bottom: 24px;
+            justify-content: center;
         }
         #searchContainer {
             height: 32px;
@@ -121,6 +119,7 @@ template.innerHTML = `
             height: 549px;
             --pipSize: 16px;
             --bevelOffset: 24px;
+            margin: 16px;
         }
         
         vpl-add-remove-units {
