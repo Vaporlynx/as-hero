@@ -29,6 +29,7 @@ template.innerHTML = `
             overflow: auto;
             flex-wrap: wrap;
             grid-area: roster;
+            justify-content: center;
         }
 
         #roster > unit-card {
