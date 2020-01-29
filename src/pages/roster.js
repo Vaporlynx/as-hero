@@ -42,6 +42,7 @@ template.innerHTML = `
 
         #modeToggle {
             justify-self: flex-end;
+            display: none;
         }
         #modeToggle > img {
             height: 26px;
