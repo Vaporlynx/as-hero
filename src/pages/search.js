@@ -68,11 +68,12 @@ template.innerHTML = `
         #mechContainer {
             grid-area: units;
             overflow: auto;
+            display: flex;
+            flex-wrap: wrap;
         }
         #mechContainer > * {
             margin-bottom: 24px;
         }
-
         #searchContainer {
             height: 32px;
             width: 50%;
@@ -115,15 +116,11 @@ template.innerHTML = `
         }
 
         .cardContainer {
-            width: 100vw;
-            height: 71.42vw;
             position: relative;
-            font-size: 2vw;
-        }
-
-        unit-card {
-            --pipSize: 2vw;
-            --bevelOffset: 2.5vw;
+            width: 768px;
+            height: 549px;
+            --pipSize: 16px;
+            --bevelOffset: 24px;
         }
         
         vpl-add-remove-units {
@@ -165,6 +162,7 @@ template.innerHTML = `
 
         #modeToggle {
             justify-self: flex-end;
+            display: none;
         }
     </style>
     <div id="controls" class="spacedColumn">

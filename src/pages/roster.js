@@ -33,12 +33,11 @@ template.innerHTML = `
 
         #roster > unit-card {
             margin: 5px;
-            width: calc(100vw / var(--cardRows) * var(--cardSizeOffset));
-            height: calc(71.42vw / var(--cardRows) * var(--cardSizeOffset));
+            width: 768px;
+            height: 549px;
             position: relative;
-            font-size: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
-            --pipSize: calc(2vw / var(--cardRows) * var(--cardSizeOffset));
-            --bevelOffset: calc(2.5vw / var(--cardRows) * var(--cardSizeOffset));
+            --pipSize: 16px;
+            --bevelOffset: 24px;
         }
 
         #modeToggle {
@@ -51,9 +50,6 @@ template.innerHTML = `
 
     <div id="controls">
         <button id="search">Search</button>
-        <vpl-label prefix="Number of columns:" id="label">
-            <input type="number" id="columnCount" value="1" min="1" max="5" slot="content"/>
-        </vpl-label>
         <vpl-label prefix="PV Total:" id="label">
             <div id="pvTotal" slot="content"></div>
         </vpl-label>
@@ -109,12 +105,6 @@ export default class rosterPage extends HTMLElement {
             urlHelper.setParams({
                 page: this.rosterCounterpart,
             });
-        });
-
-        // TODO: get the available screen size and use that to calculate how big the cards should be.
-        this.columnCountElem = this.shadowRoot.getElementById("columnCount");
-        this.columnCountElem.addEventListener("change", event => {
-            this.style.setProperty("--cardRows", this.columnCountElem.value);
         });
     }
 

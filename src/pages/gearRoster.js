@@ -10,12 +10,11 @@ template.innerHTML = `${rosterPage.template.innerHTML}
 
         gear-unit-card {
             margin: 5px;
-            width: calc(71.42vh / var(--cardRows) * var(--cardSizeOffset));
-            height: calc(100vh / var(--cardRows) * var(--cardSizeOffset));
+            height: 650px;
+            width: 457px;
             position: relative;
-            font-size: calc(2vh / var(--cardRows) * var(--cardSizeOffset));
-            --pipSize: calc(2vh / var(--cardRows) * var(--cardSizeOffset));
-            --bevelOffset: calc(2.5vh / var(--cardRows) * var(--cardSizeOffset));
+            --pipSize: 16px;
+            --bevelOffset: 24px;
         }
     </style>`
 ;

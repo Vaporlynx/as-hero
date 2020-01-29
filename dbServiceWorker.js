@@ -107,7 +107,7 @@ const fetchUnits = () => Promise.all(unitTypes.map(type => new Promise(async (re
   }
   catch (err) {
     loadedTypes.push(type);
-    resolve(err);
+    resolve({type, message: err});
   }
 })));
 
@@ -273,11 +273,12 @@ const fetchAsset = request => {
 unitDBConnection.onsuccess = async event => {
   self.clients.claim();
   unitDB = event.target.result;
+  // TODO: create a hash of the JSON files so we don't bother downloading them if they havnt changed
   const errors = await fetchUnits();
   loading = false;
   for (const error of errors) {
     if (error) {
-      handleError(error);
+      handleError(`Failed to fetch units for type:${error.type}, message: ${error.message}`);
     }
   }
 };
