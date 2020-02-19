@@ -437,14 +437,13 @@ export default class searchPage extends HTMLElement {
 
     buildCards(units, requestId) {
         if (units.length && requestId === this.requestId) {
-            for (const unit of units) {
-                const cardContainer = document.createElement("div");
-                cardContainer.classList.add("cardContainer");
-
-                const observer = new IntersectionObserver((entries, observer) => {
-                    if (entries[0].isIntersecting) {
+            const observer = new IntersectionObserver((entries, observer) => {
+                for (const entry of entries) {
+                    const container = entry.target;
+                    if (entry.isIntersecting) {
                         window.requestIdleCallback(timingData => {
                             const card = document.createElement(this.unitCard);
+                            const unit = units[container._dataIndex];
                             card.data = unit;
                             const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
                             addRemoveUnitsElem.addEventListener("add", event => {
@@ -453,19 +452,26 @@ export default class searchPage extends HTMLElement {
                             addRemoveUnitsElem.addEventListener("remove", event => {
                                 this.removeUnit(unit.id);
                             });
-                            cardContainer.appendChild(card);
-                            cardContainer.appendChild(addRemoveUnitsElem);
+                            container.appendChild(card);
+                            container.appendChild(addRemoveUnitsElem);
                         }, {timeout: 50});
                     }
                     else {
-                        while (cardContainer.hasChildNodes()) {
-                            cardContainer.removeChild(cardContainer.lastChild);
+                        while (container.hasChildNodes()) {
+                            container.removeChild(container.lastChild);
                         }
                     }
-                }, {threshold: 0.1});
+                }
+            }, {threshold: 0.1});
+            units.forEach((_, index) => {
+                const cardContainer = document.createElement("div");
+                // TODO: look for a cleaner way to do this monkeypatching can be trouble
+                cardContainer._dataIndex = index;
+                cardContainer.classList.add("cardContainer");
+
                 observer.observe(cardContainer);
                 this.mechContainerElem.appendChild(cardContainer);
-            }
+            });
         }
     }
 
