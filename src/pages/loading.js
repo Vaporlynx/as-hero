@@ -71,7 +71,7 @@ export default class rosterPage extends HTMLElement {
                     this.dispatchEvent(new CustomEvent("loaded"));
                 }
                 else {
-                    this.progressIndicatorElem.prefix = `Loading ${Math.floor(parseInt(body * 100))}%`;
+                    this.progressIndicatorElem.prefix = `Downloading unit database ${Math.floor(parseInt(body * 100))}%`;
                     setTimeout(() => {
                         this.updateLoadStatus();
                     }, 100);
