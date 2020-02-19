@@ -72,6 +72,7 @@ template.innerHTML = `
             flex-wrap: wrap;
             justify-content: center;
         }
+
         #searchContainer {
             height: 32px;
             width: 50%;
@@ -120,6 +121,7 @@ template.innerHTML = `
             --pipSize: 16px;
             --bevelOffset: 24px;
             margin: 16px;
+            background-color: var(--nonInteractiveElementBackgroundColor);
         }
         
         vpl-add-remove-units {
@@ -433,36 +435,38 @@ export default class searchPage extends HTMLElement {
         }
     }
 
-    // TODO: need a better solution than this.
-    // Scale the div that contains these cards so that it is the card height * number of cards
-    // set up recycling and only have enough card elements created at any time to fill the screen
-    // Recycle existing cards when the user scrolls so performance is better with very large
-    // number of cards
     buildCards(units, requestId) {
         if (units.length && requestId === this.requestId) {
-            const unit = units.splice(0, 1)[0];
-            this.buildCard(unit);
-            window.requestIdleCallback(timingData => {
-                this.buildCards(units, requestId);
-            }, {timeout: 50});
-        }
-    }
+            for (const unit of units) {
+                const cardContainer = document.createElement("div");
+                cardContainer.classList.add("cardContainer");
 
-    buildCard(unit) {
-        const card = document.createElement(this.unitCard);
-        card.data = unit;
-        const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
-        addRemoveUnitsElem.addEventListener("add", event => {
-            this.addUnit(unit);
-        });
-        const cardContainer = document.createElement("div");
-        addRemoveUnitsElem.addEventListener("remove", event => {
-            this.removeUnit(unit.id);
-        });
-        cardContainer.classList.add("cardContainer");
-        cardContainer.appendChild(addRemoveUnitsElem);
-        cardContainer.appendChild(card);
-        this.mechContainerElem.appendChild(cardContainer);
+                const observer = new IntersectionObserver((entries, observer) => {
+                    if (entries[0].isIntersecting) {
+                        window.requestIdleCallback(timingData => {
+                            const card = document.createElement(this.unitCard);
+                            card.data = unit;
+                            const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
+                            addRemoveUnitsElem.addEventListener("add", event => {
+                                this.addUnit(unit);
+                            });
+                            addRemoveUnitsElem.addEventListener("remove", event => {
+                                this.removeUnit(unit.id);
+                            });
+                            cardContainer.appendChild(card);
+                            cardContainer.appendChild(addRemoveUnitsElem);
+                        }, {timeout: 50});
+                    }
+                    else {
+                        while (cardContainer.hasChildNodes()) {
+                            cardContainer.removeChild(cardContainer.lastChild);
+                        }
+                    }
+                }, {threshold: 0.1});
+                observer.observe(cardContainer);
+                this.mechContainerElem.appendChild(cardContainer);
+            }
+        }
     }
 
     addUnit(unit) {
