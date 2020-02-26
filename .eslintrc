@@ -60,7 +60,5 @@
     "require": true,
     "currentMech": true,
     "defs": true,
-    "importScripts": true,
-    "Fuse": true
-  }
+    "importScripts": true
 }
