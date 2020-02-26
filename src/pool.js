@@ -14,7 +14,7 @@ export const initializePool = (symbol, constructor, maxCacheCount) => {
     }
 
     pools.set(symbol, {constructor, maxCacheCount, instances: []});
-}
+};
 
 export const getFromPool = (symbol, constructorArguments) => {
     const pool = getPool(symbol);

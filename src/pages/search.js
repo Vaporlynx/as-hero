@@ -1,5 +1,10 @@
+import * as pool from "../../src/pool.js";
 import * as urlHelper from "../../src/urlHelper.js";
 import * as unitHelper from "../../src/unitHelper.js";
+
+const cardPoolReference = Symbol("Search Unit Card Pool");
+
+pool.initializePool(cardPoolReference, element => document.createElement(element), 10);
 
 const advancedParams = [
     "minPV",
@@ -441,23 +446,24 @@ export default class searchPage extends HTMLElement {
                 for (const entry of entries) {
                     const container = entry.target;
                     if (entry.isIntersecting) {
-                        window.requestIdleCallback(timingData => {
-                            const card = document.createElement(this.unitCard);
-                            const unit = units[container._dataIndex];
-                            card.data = unit;
-                            const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
-                            addRemoveUnitsElem.addEventListener("add", event => {
-                                this.addUnit(unit);
-                            });
-                            addRemoveUnitsElem.addEventListener("remove", event => {
-                                this.removeUnit(unit.id);
-                            });
-                            container.appendChild(card);
-                            container.appendChild(addRemoveUnitsElem);
-                        }, {timeout: 50});
+                        const card = pool.getFromPool(cardPoolReference, this.unitCard);
+                        const unit = units[container._dataIndex];
+                        card.data = unit;
+                        const addRemoveUnitsElem = document.createElement("vpl-add-remove-units");
+                        addRemoveUnitsElem.addEventListener("add", event => {
+                            this.addUnit(unit);
+                        });
+                        addRemoveUnitsElem.addEventListener("remove", event => {
+                            this.removeUnit(unit.id);
+                        });
+                        container.appendChild(card);
+                        container.appendChild(addRemoveUnitsElem);
                     }
                     else {
                         while (container.hasChildNodes()) {
+                            if (container.lastElementChild.constructor.name === "UnitCard") {
+                                pool.returnToPool(cardPoolReference, container.lastElementChild);
+                            }
                             container.removeChild(container.lastChild);
                         }
                     }
