@@ -440,6 +440,11 @@ export default class searchPage extends HTMLElement {
         }
     }
 
+    // TODO: performance could still be better
+    // Look at replacing the intersection observer with a different system (look at scrolltop of parent div, calculate cards in view?)
+    // Look at recycling the addRemoveUnitsElem (how to handle event listeners?)
+    // Look at pagination
+    // BUG: scrolling y causes the x scroll bar to grow.  Looks related to flex-wrap on parent div
     buildCards(units, requestId) {
         if (units.length && requestId === this.requestId) {
             const observer = new IntersectionObserver((entries, observer) => {
