@@ -2,7 +2,7 @@ const fs = require("fs").promises;
 
 const request = require("request-promise-native");
 
-let maxQuerySize = 50;
+let maxQuerySize = 30;
 const requestTimeout = 60000;
 const maxRequeueTime = 60000;
 
@@ -254,22 +254,14 @@ const parseMtfs = () => new Promise(resolve => {
     });
 });
 
+const goodWords = new Set();
+
 const getUnits = () => new Promise(async(resolve, reject) => {
-
-    const stringsSearched = new Set();
-
     const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
     const unitsByType = {};
 
     const searchByString = searchString => {
         return new Promise(async (resolve, reject) => {
-            if (stringsSearched.has(searchString)) {
-                resolve([]);
-                return;
-            }
-            else {
-                stringsSearched.add(searchString);
-            }
             let completed = false;
             setTimeout(() => {
                 if (!completed) {
@@ -324,6 +316,9 @@ const getUnits = () => new Promise(async(resolve, reject) => {
                             additionalWords.push(`${letter} ${searchString}`);
                         }
                     }
+                    else if (totalFound > 90) {
+                        goodWords.add(searchString);
+                    }
                     resolve(additionalWords);
                 }
                 else {
@@ -337,46 +332,53 @@ const getUnits = () => new Promise(async(resolve, reject) => {
     };
     console.log(`Searching, started at ${new Date().toString()}`);
     try {
-        let requeueWaitTime = 1;
-        const words = [];
-        const inerval = setInterval(() => {
-            console.log(`Words remaining: ${words.length} wait time: ${requeueWaitTime}ms`);
-        }, 5000);
+        const wordPool = new Set();
+        const searchedWords = new Set();
         for (const vowel of ["a", "e", "i", "o", "u", "y"]) {
             for (const letter of letters) {
-                words.push(`${vowel}${letter}`);
+                wordPool.add(`${vowel}${letter}`);
             }
         }
+
+        let requeueWaitTime = 1;
         const queryQueue = [];
-        const manageQueue = () => {
-            const delta = maxQuerySize - queryQueue.length;
-            if (delta > 0 && words.length) {
-                const word = words.pop();
-                queryQueue.push(word);
-                searchByString(word).then(additionalWords => {
-                    requeueWaitTime = Math.floor(Math.max(1, requeueWaitTime * 0.9));
-                    queryQueue.splice(queryQueue.indexOf(word), 1);
-                    words.push(...additionalWords);
-                }).catch(err => {
-                    if (err === "TIMEOUT_REACHED" || err.statusCode) {
-                        requeueWaitTime = Math.ceil(Math.min(requeueWaitTime * 1.25, maxRequeueTime));
-                    }
-                    queryQueue.splice(queryQueue.indexOf(word), 1);
-                    words.push(word);
-                });
+
+        const logInterval = setInterval(() => {
+            console.log(`Pending words: ${wordPool.size}, searched words: ${searchedWords.size}, sleep time: ${requeueWaitTime} ms`);
+        }, 5000);
+        const manageInterval = setInterval(() => {
+            const delta = Math.min(Math.max(maxQuerySize - queryQueue.length, 0), wordPool.size);
+            if (delta) {
+                const batch = [...wordPool].slice(0, delta);
+                for (const word of batch) {
+                    queryQueue.push(word);
+                    wordPool.delete(word);
+                    searchByString(word).then(additionalWords => {
+                        setTimeout(() => {
+                            requeueWaitTime = Math.floor(Math.max(1, requeueWaitTime * 0.9));
+                            for (const additionalWord of [...additionalWords]) {
+                                if (!searchedWords.has(additionalWord)) {
+                                    wordPool.add(additionalWord);
+                                }
+                            }
+                            searchedWords.add(word);
+                            queryQueue.splice(queryQueue.indexOf(word), 1);
+                        }, requeueWaitTime);
+                    }).catch(err => {
+                        if (err === "TIMEOUT_REACHED" || err.statusCode) {
+                            requeueWaitTime = Math.ceil(Math.min(requeueWaitTime * 1.25, maxRequeueTime));
+                        }
+                        queryQueue.splice(queryQueue.indexOf(word), 1);
+                        wordPool.add(word);
+                    });
+                }
             }
-            setTimeout(async () => {
-                if (requeueWaitTime > 1 || words.length || queryQueue.length) {
-                    manageQueue();
-                }
-                else {
-                    console.log(`Searching finished at ${new Date().toString()}`);
-                    clearInterval(inerval);
-                    resolve(unitsByType);
-                }
-            }, requeueWaitTime);
-        };
-        manageQueue();
+            if (!wordPool.size && !queryQueue.length) {
+                resolve(unitsByType);
+                clearInterval(logInterval);
+                clearInterval(manageInterval);
+            }
+        }, 5000);
     }
     catch (err) {
         reject(err);
@@ -405,6 +407,7 @@ Promise.all([getUnits(), parseMtfs()]).then(async ([unitsByType, mtfs]) => {
             await fs.writeFile(`${__dirname}/../defs/${key}-def.json`, JSON.stringify(units));
         }
         console.log(`Finished writing defs at ${new Date().toString()}`);
+        console.log(`Good words: ${[...goodWords].join(", ")}`);
     }
     catch (err) {
         console.log(`Failed to write data: ${err}`);
